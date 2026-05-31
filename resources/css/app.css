@@ -1,0 +1,1623 @@
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/Vazirmatn-Regular.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/Vazirmatn-Medium.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/Vazirmatn-Bold.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/Vazirmatn-Black.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --ys-blue-950: #00244f;
+    --ys-blue-900: #00326d;
+    --ys-blue-800: #0a3c78;
+    --ys-red-600: #e51b22;
+    --ys-red-500: #f01e28;
+    --ys-white: #ffffff;
+    --ys-slate-50: #f8fafc;
+    --ys-slate-100: #f1f5f9;
+    --ys-slate-300: #cbd5e1;
+    --ys-slate-600: #475569;
+    --ys-slate-700: #334155;
+    --ys-slate-900: #0f172a;
+}
+
+html,
+body {
+    font-family: "Vazirmatn", sans-serif;
+}
+
+body {
+    direction: rtl;
+    min-height: 100vh;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+:focus-visible {
+    outline: 3px solid rgba(229, 27, 34, 0.45);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+.card {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+}
+
+.ys-page {
+    background: radial-gradient(circle at 15% 0%, rgba(0, 50, 109, 0.06), transparent 35%),
+        radial-gradient(circle at 85% 0%, rgba(229, 27, 34, 0.06), transparent 38%),
+        var(--ys-slate-50);
+    overflow-x: clip;
+}
+
+.dark .ys-page {
+    background: radial-gradient(circle at 15% 0%, rgba(0, 50, 109, 0.22), transparent 35%),
+        radial-gradient(circle at 85% 0%, rgba(229, 27, 34, 0.16), transparent 38%),
+        #020617;
+}
+
+.ys-container {
+    @apply mx-auto w-full max-w-7xl px-4;
+}
+
+.ys-btn {
+    @apply inline-flex items-center justify-center rounded-2xl px-5 py-2.5 text-sm font-extrabold transition;
+}
+
+.ys-btn--primary {
+    background: var(--ys-red-600);
+    color: #fff;
+    box-shadow: 0 14px 30px rgba(229, 27, 34, 0.22);
+}
+
+.ys-btn--primary:hover {
+    background: #c9151b;
+}
+
+.ys-btn--secondary {
+    background: #fff;
+    color: var(--ys-blue-900);
+    border: 1px solid rgba(0, 50, 109, 0.16);
+}
+
+.dark .ys-btn--secondary {
+    background: rgba(15, 23, 42, 0.65);
+    color: #e2e8f0;
+    border-color: rgba(226, 232, 240, 0.2);
+}
+
+.ys-header {
+    @apply sticky top-0 z-50 border-b border-slate-200/70;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.dark .ys-header {
+    @apply border-slate-800/80;
+    background: rgba(2, 6, 23, 0.82);
+}
+
+.ys-header--scrolled {
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+
+.ys-header__inner {
+    @apply flex min-h-[64px] items-center justify-between gap-3 py-3 lg:min-h-[76px];
+}
+
+.ys-brand {
+    @apply flex items-center gap-3;
+}
+
+.ys-brand__logo {
+    @apply h-10 w-auto lg:h-[46px];
+}
+
+.ys-brand__text {
+    @apply hidden text-sm font-black text-slate-900 lg:block;
+}
+
+.dark .ys-brand__text {
+    @apply text-slate-100;
+}
+
+.ys-nav {
+    @apply hidden items-center gap-6 text-sm font-bold text-slate-700 lg:flex;
+}
+
+.ys-nav a {
+    @apply transition hover:text-slate-900;
+}
+
+.dark .ys-nav {
+    @apply text-slate-300;
+}
+
+.dark .ys-nav a:hover {
+    @apply text-white;
+}
+
+.ys-header__actions {
+    @apply flex items-center gap-2;
+}
+
+.ys-icon-btn {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100;
+}
+
+.ys-icon-btn svg {
+    @apply h-5 w-5;
+}
+
+.dark .ys-icon-btn {
+    @apply border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800;
+}
+
+.ys-menu-btn {
+    @apply inline-flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white lg:hidden;
+}
+
+.ys-menu-btn span {
+    @apply block h-0.5 w-5 rounded-full bg-slate-700;
+}
+
+.dark .ys-menu-btn {
+    @apply border-slate-700 bg-slate-900;
+}
+
+.dark .ys-menu-btn span {
+    @apply bg-slate-200;
+}
+
+.ys-drawer-backdrop {
+    @apply fixed inset-0 z-[58] bg-slate-950/50;
+}
+
+.ys-drawer {
+    @apply fixed bottom-0 right-0 top-0 z-[59] w-[290px] border-l border-slate-200 bg-white p-4 shadow-2xl;
+}
+
+.dark .ys-drawer {
+    @apply border-slate-800 bg-slate-950;
+}
+
+.ys-drawer__head {
+    @apply mb-5 flex items-center justify-between;
+}
+
+.ys-drawer__nav {
+    @apply grid gap-2;
+}
+
+.ys-drawer__nav a {
+    @apply rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100;
+}
+
+.dark .ys-drawer__nav a {
+    @apply text-slate-200 hover:bg-slate-800;
+}
+
+.ys-drawer__actions {
+    @apply mt-5 grid gap-2;
+}
+
+.ys-hero {
+    @apply relative overflow-hidden;
+    min-height: 680px;
+    background: radial-gradient(circle at 10% 20%, rgba(229, 27, 34, 0.18), transparent 32%),
+        linear-gradient(135deg, #00326d 0%, #071b3a 52%, #111827 100%);
+}
+
+.ys-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.14), transparent 36%),
+        radial-gradient(circle at 88% 72%, rgba(240, 30, 40, 0.3), transparent 35%);
+}
+
+.ys-hero__inner {
+    @apply relative grid items-center gap-12 py-14 lg:py-20;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+}
+
+.ys-hero__badge {
+    @apply inline-flex rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-bold text-slate-100;
+}
+
+.ys-hero__content h1 {
+    @apply mt-4 text-3xl font-black leading-snug text-white lg:text-5xl;
+}
+
+.ys-hero__content p {
+    @apply mt-4 max-w-[560px] text-sm leading-7 text-slate-100 lg:text-base;
+}
+
+.ys-hero__actions {
+    @apply mt-7 flex flex-wrap gap-3;
+}
+
+.ys-hero__visual {
+    @apply relative;
+}
+
+.ys-hero__visual--illustrated {
+    @apply flex min-h-[460px] items-center justify-center;
+}
+
+.ys-hero-illustration {
+    width: min(100%, 740px);
+    height: auto;
+    display: block;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    filter: drop-shadow(0 30px 60px rgba(0, 17, 37, 0.35));
+}
+
+.ys-hero-floating-card {
+    @apply absolute z-[2] rounded-3xl border border-white/50 px-4 py-3;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 16px 45px rgba(15, 23, 42, 0.2);
+    color: var(--ys-slate-900);
+    min-width: 170px;
+}
+
+.ys-hero-floating-card > span {
+    @apply block text-xs font-bold text-slate-600;
+}
+
+.ys-hero-floating-card strong {
+    @apply mt-1 block text-lg font-black text-blue-900;
+    line-height: 1.6;
+}
+
+.ys-hero-floating-card small {
+    @apply mt-2 block text-xs text-slate-600;
+}
+
+.ys-hero-floating-card--top {
+    top: 28px;
+    inset-inline-start: 22px;
+}
+
+.ys-hero-floating-card--bottom {
+    bottom: 22px;
+    inset-inline-end: 22px;
+}
+
+.dark .ys-hero-floating-card {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(148, 163, 184, 0.3);
+    color: #f8fafc;
+}
+
+.dark .ys-hero-floating-card > span,
+.dark .ys-hero-floating-card small {
+    @apply text-slate-300;
+}
+
+.dark .ys-hero-floating-card strong {
+    @apply text-slate-100;
+}
+
+.ys-gallery-section {
+    width: 100%;
+    background: #fff;
+    padding: 80px 0;
+    overflow: hidden;
+    user-select: none;
+}
+
+.dark .ys-gallery-section {
+    background: #fff;
+}
+
+.ys-gallery-shell {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+
+.ys-gallery-swiper {
+    width: 100%;
+    height: 220px;
+    overflow: visible;
+}
+
+.ys-gallery-swiper .swiper-wrapper {
+    align-items: center;
+}
+
+.ys-gallery-slide {
+    width: auto !important;
+    max-width: 350px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 32px;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.ys-gallery-slide img {
+    width: auto;
+    max-width: 350px;
+    height: 220px;
+    display: block;
+    object-fit: cover;
+    border-radius: 32px;
+}
+
+@media (max-width: 767px) {
+    .ys-gallery-section {
+        padding: 40px 0;
+    }
+
+    .ys-gallery-slide {
+        max-width: 210px;
+        height: 130px;
+        border-radius: 18px;
+    }
+
+    .ys-gallery-slide img {
+        max-width: 210px;
+        height: 130px;
+        border-radius: 18px;
+    }
+}
+
+.ys-section {
+    @apply py-12 lg:py-16;
+}
+
+.ys-section--alt {
+    @apply bg-white/80;
+}
+
+.dark .ys-section--alt {
+    @apply bg-slate-900/40;
+}
+
+.ys-section-head {
+    @apply mb-6 flex flex-wrap items-center justify-between gap-3;
+}
+
+.ys-section-head--with-icon {
+    @apply items-center;
+}
+
+.ys-section-head__icon {
+    @apply inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50;
+}
+
+.ys-section-head__icon .ys-icon-svg {
+    width: 24px;
+    height: 24px;
+}
+
+.dark .ys-section-head__icon {
+    @apply bg-blue-900/30;
+}
+
+.dark .ys-icon-svg {
+    color: #dbeafe;
+}
+
+.ys-kicker {
+    @apply text-xs font-black tracking-wide text-red-600;
+}
+
+.ys-section-head h2 {
+    @apply mt-1 text-2xl font-black text-slate-900 lg:text-3xl;
+}
+
+.dark .ys-section-head h2 {
+    @apply text-slate-100;
+}
+
+.ys-reset-filter {
+    @apply rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50;
+}
+
+.dark .ys-reset-filter {
+    @apply border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800;
+}
+
+.ys-filter-panel {
+    @apply mb-5;
+}
+
+.ys-filter-toggle {
+    @apply hidden w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-800;
+}
+
+.ys-filter-toggle__icon {
+    @apply text-base transition;
+}
+
+.ys-filter-toggle__icon.is-open {
+    @apply rotate-180;
+}
+
+.ys-filters {
+    @apply mb-5 grid gap-3 rounded-3xl border border-slate-200 bg-white p-4 lg:grid-cols-4;
+}
+
+.dark .ys-filters {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-filter span {
+    @apply mb-1 block text-xs font-bold text-slate-600;
+}
+
+.dark .ys-filter span {
+    @apply text-slate-300;
+}
+
+.ys-filter input,
+.ys-filter select {
+    @apply w-full rounded-xl border-slate-300 bg-white text-sm text-slate-800;
+}
+
+.dark .ys-filter input,
+.dark .ys-filter select {
+    @apply border-slate-700 bg-slate-950 text-slate-100;
+}
+
+
+.ys-results-bar {
+    @apply mb-4 flex flex-wrap items-center justify-between gap-2;
+}
+
+.ys-results-bar__count {
+    @apply text-sm font-bold text-slate-700;
+}
+
+.dark .ys-results-bar__count {
+    @apply text-slate-300;
+}
+
+.ys-filter-chips {
+    @apply flex flex-wrap items-center gap-2;
+}
+
+.ys-filter-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-bold text-slate-700;
+}
+
+.ys-filter-chip strong {
+    @apply text-sm leading-none text-slate-500;
+}
+
+.dark .ys-filter-chip {
+    @apply border-slate-700 bg-slate-900 text-slate-200;
+}
+
+.dark .ys-filter-chip strong {
+    @apply text-slate-400;
+}
+
+.ys-job-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+}
+
+.ys-job-card {
+    @apply rounded-3xl border border-slate-200 bg-white p-5 transition;
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+}
+
+.ys-job-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 60px rgba(0, 50, 109, 0.14);
+}
+
+.dark .ys-job-card {
+    @apply border-slate-800 bg-slate-900;
+    box-shadow: none;
+}
+
+.ys-job-card__head {
+    @apply flex items-start justify-between gap-2;
+}
+
+.ys-job-card__head h3 {
+    @apply text-base font-black leading-6 text-slate-900;
+}
+
+.dark .ys-job-card__head h3 {
+    @apply text-slate-100;
+}
+
+.ys-pill {
+    @apply inline-flex rounded-full px-2 py-1 text-[11px] font-bold;
+}
+
+.ys-pill--danger {
+    @apply bg-red-100 text-red-700;
+}
+
+.dark .ys-pill--danger {
+    @apply bg-red-900/40 text-red-200;
+}
+
+.ys-job-card__meta {
+    @apply mt-3 flex flex-wrap gap-2 text-xs text-slate-600;
+}
+
+.ys-job-card__meta span {
+    @apply inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1;
+}
+
+.dark .ys-job-card__meta {
+    @apply text-slate-300;
+}
+
+.dark .ys-job-card__meta span {
+    @apply bg-slate-800;
+}
+
+.ys-job-card__meta svg {
+    @apply h-3.5 w-3.5;
+}
+
+.ys-job-card__salary {
+    @apply mt-3 text-sm font-extrabold text-emerald-700;
+}
+
+.dark .ys-job-card__salary {
+    @apply text-emerald-300;
+}
+
+.ys-job-card__desc {
+    @apply mt-3 text-sm leading-6 text-slate-700;
+}
+
+.dark .ys-job-card__desc {
+    @apply text-slate-300;
+}
+
+.ys-job-card__note {
+    @apply mt-2 text-xs font-semibold text-slate-500;
+}
+
+.dark .ys-job-card__note {
+    @apply text-slate-400;
+}
+
+.ys-job-card__cta {
+    @apply mt-4 inline-flex text-sm font-extrabold text-blue-900 hover:text-blue-700;
+}
+
+.dark .ys-job-card__cta {
+    @apply text-blue-300 hover:text-blue-200;
+}
+
+.ys-empty {
+    @apply rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center;
+}
+
+.dark .ys-empty {
+    @apply border-slate-700 bg-slate-900;
+}
+
+.ys-empty__icon {
+    @apply mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50;
+}
+
+.ys-empty__icon .ys-icon-svg {
+    width: 20px;
+    height: 20px;
+}
+
+.dark .ys-empty__icon {
+    @apply bg-blue-900/30;
+}
+
+.ys-empty h3 {
+    @apply text-lg font-black text-slate-900;
+}
+
+.dark .ys-empty h3 {
+    @apply text-slate-100;
+}
+
+.ys-empty p {
+    @apply mt-2 text-sm text-slate-600;
+}
+
+.dark .ys-empty p {
+    @apply text-slate-300;
+}
+
+.ys-empty__actions {
+    @apply mt-4 flex flex-wrap items-center justify-center gap-2;
+}
+
+.ys-section-visual-card {
+    @apply mb-5 overflow-hidden rounded-[28px] border border-slate-200 bg-white p-2;
+}
+
+.ys-section-visual-card--soft {
+    @apply bg-gradient-to-br from-blue-50 to-red-50;
+}
+
+.dark .ys-section-visual-card {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-section-illustration {
+    @apply block h-auto w-full rounded-3xl;
+}
+
+.ys-department-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+}
+
+.ys-department-card {
+    @apply rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5;
+}
+
+.dark .ys-department-card {
+    @apply border-slate-800 from-slate-900 to-slate-900;
+}
+
+.ys-department-card__icon {
+    @apply mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100;
+}
+
+.ys-department-card__icon .ys-icon-svg {
+    width: 22px;
+    height: 22px;
+}
+
+.dark .ys-department-card__icon {
+    @apply bg-blue-900/30;
+}
+
+.ys-department-card h3 {
+    @apply text-lg font-black text-slate-900;
+}
+
+.dark .ys-department-card h3 {
+    @apply text-slate-100;
+}
+
+.ys-department-card p {
+    @apply mt-2 text-sm leading-6 text-slate-600;
+}
+
+.dark .ys-department-card p {
+    @apply text-slate-300;
+}
+
+.ys-department-card span {
+    @apply mt-3 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800;
+}
+
+.ys-department-card.is-muted {
+    @apply border-dashed;
+}
+
+.ys-department-card span.is-passive {
+    @apply bg-slate-100 text-slate-700;
+}
+
+.dark .ys-department-card span {
+    @apply bg-blue-900/30 text-blue-200;
+}
+
+.dark .ys-department-card span.is-passive {
+    @apply bg-slate-800 text-slate-300;
+}
+
+.ys-benefit-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
+}
+
+.ys-benefit-card {
+    @apply relative rounded-[28px] border border-slate-200 bg-white p-6;
+}
+
+.dark .ys-benefit-card {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-benefit-card__icon {
+    @apply mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50;
+}
+
+.ys-benefit-card__icon .ys-icon-svg {
+    width: 20px;
+    height: 20px;
+}
+
+.dark .ys-benefit-card__icon {
+    @apply bg-blue-900/30;
+}
+
+.ys-benefit-card h3 {
+    @apply text-base font-black text-slate-900;
+}
+
+.dark .ys-benefit-card h3 {
+    @apply text-slate-100;
+}
+
+.ys-benefit-card p {
+    @apply mt-2 text-sm leading-6 text-slate-600;
+}
+
+.dark .ys-benefit-card p {
+    @apply text-slate-300;
+}
+
+.ys-culture {
+    @apply grid gap-6 lg:grid-cols-2;
+}
+
+.ys-culture--with-visual {
+    @apply items-center;
+}
+
+.ys-culture h2 {
+    @apply mt-1 text-2xl font-black text-slate-900;
+}
+
+.dark .ys-culture h2 {
+    @apply text-slate-100;
+}
+
+.ys-culture p {
+    @apply mt-3 text-sm leading-7 text-slate-700;
+}
+
+.dark .ys-culture p {
+    @apply text-slate-300;
+}
+
+.ys-culture-cards {
+    @apply grid gap-3;
+}
+
+.ys-culture__visual {
+    @apply overflow-hidden rounded-[28px] border border-slate-200 bg-white p-2;
+}
+
+.dark .ys-culture__visual {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-culture-cards article {
+    @apply rounded-2xl border border-slate-200 bg-white p-4;
+}
+
+.dark .ys-culture-cards article {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-culture-cards strong {
+    @apply block text-sm font-black text-slate-900;
+}
+
+.dark .ys-culture-cards strong {
+    @apply text-slate-100;
+}
+
+.ys-culture-cards span {
+    @apply mt-1 block text-xs text-slate-600;
+}
+
+.dark .ys-culture-cards span {
+    @apply text-slate-300;
+}
+
+.ys-growth-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
+}
+
+.ys-growth-grid--timeline .ys-growth-card {
+    position: relative;
+}
+
+.ys-growth-grid--timeline .ys-growth-card::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -12px;
+    top: 28px;
+    width: 12px;
+    height: 2px;
+    background: rgba(0, 50, 109, 0.2);
+}
+
+.ys-growth-grid--timeline .ys-growth-card:first-child::before {
+    display: none;
+}
+
+.ys-growth-card {
+    @apply rounded-3xl border border-slate-200 bg-white p-5;
+}
+
+.dark .ys-growth-card {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-growth-card > span {
+    @apply inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-black text-blue-900;
+}
+
+.dark .ys-growth-card > span {
+    @apply bg-blue-900/30 text-blue-200;
+}
+
+.ys-growth-card h3 {
+    @apply mt-3 text-base font-black text-slate-900;
+}
+
+.dark .ys-growth-card h3 {
+    @apply text-slate-100;
+}
+
+.ys-growth-card p {
+    @apply mt-2 text-sm text-slate-600;
+}
+
+.dark .ys-growth-card p {
+    @apply text-slate-300;
+}
+
+.ys-process {
+    @apply grid gap-3;
+}
+
+.ys-process-layout {
+    @apply grid gap-4 lg:grid-cols-2 lg:items-start;
+}
+
+.ys-process-layout--compact {
+    @apply lg:grid-cols-[minmax(0,1.3fr)_minmax(0,.7fr)];
+}
+
+.ys-process li {
+    @apply flex gap-4 rounded-2xl border border-slate-200 bg-white p-4;
+}
+
+.dark .ys-process li {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-process li > span {
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-sm font-black text-red-700;
+}
+
+.dark .ys-process li > span {
+    @apply bg-red-900/40 text-red-200;
+}
+
+.ys-process h3 {
+    @apply text-sm font-black text-slate-900;
+}
+
+.dark .ys-process h3 {
+    @apply text-slate-100;
+}
+
+.ys-process p {
+    @apply mt-1 text-sm text-slate-600;
+}
+
+.dark .ys-process p {
+    @apply text-slate-300;
+}
+
+.ys-process-note {
+    @apply rounded-3xl border border-slate-200 bg-white p-5;
+}
+
+.ys-process-note h3 {
+    @apply text-base font-black text-slate-900;
+}
+
+.ys-process-note p {
+    @apply mt-2 text-sm leading-7 text-slate-600;
+}
+
+.dark .ys-process-note {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.dark .ys-process-note h3 {
+    @apply text-slate-100;
+}
+
+.dark .ys-process-note p {
+    @apply text-slate-300;
+}
+
+.ys-faq {
+    @apply space-y-3;
+}
+
+.ys-faq-item {
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white;
+}
+
+.dark .ys-faq-item {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-faq-item__question {
+    @apply flex w-full items-center justify-between gap-3 px-4 py-3 text-right text-sm font-black text-slate-900;
+}
+
+.dark .ys-faq-item__question {
+    @apply text-slate-100;
+}
+
+.ys-faq-item__icon {
+    @apply inline-flex h-7 w-7 items-center justify-center rounded-xl bg-slate-100 text-lg;
+}
+
+.dark .ys-faq-item__icon {
+    @apply bg-slate-800;
+}
+
+.ys-faq-item__icon.is-open {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.dark .ys-faq-item__icon.is-open {
+    @apply bg-blue-900/35 text-blue-100;
+}
+
+.ys-faq-item__answer {
+    @apply px-4 pb-4 text-sm leading-7 text-slate-600;
+}
+
+.dark .ys-faq-item__answer {
+    @apply text-slate-300;
+}
+
+.ys-general-apply {
+    @apply grid gap-6 rounded-[28px] border border-slate-200 p-6 lg:grid-cols-2 lg:p-8;
+    background: radial-gradient(circle at 85% 14%, rgba(229, 27, 34, 0.24), transparent 34%),
+        linear-gradient(135deg, #00326d 0%, #071b3a 54%, #0f172a 100%);
+    border-color: rgba(148, 163, 184, 0.22);
+    color: #e2e8f0;
+}
+
+.dark .ys-general-apply {
+    @apply border-slate-700;
+    background: radial-gradient(circle at 85% 14%, rgba(229, 27, 34, 0.2), transparent 34%),
+        linear-gradient(135deg, #001b3a 0%, #0b1220 58%, #020617 100%);
+}
+
+.ys-general-apply h2 {
+    @apply mt-1 text-2xl font-black text-white;
+}
+
+.dark .ys-general-apply h2 {
+    @apply text-white;
+}
+
+.ys-general-apply p {
+    @apply mt-3 text-sm leading-7 text-slate-200;
+}
+
+.dark .ys-general-apply p {
+    @apply text-slate-200;
+}
+
+.ys-inline-success {
+    @apply mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700;
+}
+
+.dark .ys-inline-success {
+    @apply border-emerald-700/40 bg-emerald-950/40 text-emerald-200;
+}
+
+.ys-general-apply__visual {
+    @apply mt-4 overflow-hidden rounded-3xl border bg-slate-100/10 p-2;
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+.ys-general-apply__visual img {
+    @apply w-full rounded-2xl object-cover;
+    min-height: 220px;
+}
+
+.dark .ys-general-apply__visual {
+    @apply bg-slate-900/30;
+}
+
+.ys-general-apply .ys-form {
+    @apply rounded-3xl border border-slate-200 bg-white p-4 lg:p-5;
+    color: #0f172a;
+}
+
+.dark .ys-general-apply .ys-form {
+    @apply border-slate-700 bg-slate-900;
+    color: #e2e8f0;
+}
+
+.ys-form-grid {
+    @apply grid gap-3 md:grid-cols-2;
+}
+
+.ys-form-grid__full {
+    @apply md:col-span-2;
+}
+
+.ys-form label span {
+    @apply mb-1 block text-xs font-bold text-slate-700;
+}
+
+.dark .ys-form label span {
+    @apply text-slate-200;
+}
+
+.ys-form input,
+.ys-form select,
+.ys-form textarea {
+    @apply w-full rounded-2xl border-slate-300 bg-white text-sm text-slate-800;
+}
+
+.dark .ys-form input,
+.dark .ys-form select,
+.dark .ys-form textarea {
+    @apply border-slate-700 bg-slate-950 text-slate-100;
+}
+
+.ys-form small {
+    @apply mt-1 block text-xs text-slate-500;
+}
+
+.dark .ys-form small {
+    @apply text-slate-400;
+}
+
+.ys-form em {
+    @apply mt-1 block text-xs font-semibold not-italic text-red-600;
+}
+
+.ys-form-feedback {
+    @apply mb-4 rounded-2xl border px-4 py-3 text-sm;
+}
+
+.ys-form-feedback--success {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+}
+
+.ys-form-feedback--error {
+    @apply border-rose-200 bg-rose-50 text-rose-700;
+}
+
+.ys-general-apply .ys-form-feedback--success {
+    @apply border-emerald-300 bg-emerald-100 text-emerald-900;
+}
+
+.ys-general-apply .ys-form-feedback--error {
+    @apply border-rose-300 bg-rose-100 text-rose-900;
+}
+
+.ys-form-feedback__list {
+    @apply mt-2 list-disc space-y-1 pr-5 text-xs;
+}
+
+.ys-upload input[type="file"] {
+    @apply sr-only;
+}
+
+.ys-upload__box {
+    @apply cursor-pointer rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5;
+}
+
+.dark .ys-upload__box {
+    @apply border-slate-700 bg-slate-950;
+}
+
+.ys-upload__box strong {
+    @apply block text-sm font-bold text-slate-900;
+}
+
+.dark .ys-upload__box strong {
+    @apply text-slate-100;
+}
+
+.ys-form__submit {
+    @apply mt-4 w-full;
+}
+
+.ys-form__submit.is-loading {
+    @apply cursor-not-allowed opacity-80;
+}
+
+.ys-captcha__row {
+    @apply mb-2 grid items-center gap-2;
+    grid-template-columns: 170px minmax(0, 1fr) 44px;
+}
+
+.ys-captcha__image {
+    @apply h-12 w-full rounded-xl border border-slate-300 bg-white object-cover;
+}
+
+.ys-captcha__row input {
+    @apply h-12 rounded-xl border-slate-300;
+}
+
+.ys-captcha__refresh {
+    @apply inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-100;
+}
+
+.ys-captcha__refresh svg {
+    @apply h-5 w-5;
+}
+
+.dark .ys-captcha__image {
+    @apply border-slate-700 bg-slate-950;
+}
+
+.dark .ys-captcha__row input {
+    @apply border-slate-700 bg-slate-950 text-slate-100;
+}
+
+.dark .ys-captcha__refresh {
+    @apply border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800;
+}
+
+@media (max-width: 640px) {
+    .ys-captcha__row {
+        grid-template-columns: 126px minmax(0, 1fr) 42px;
+    }
+}
+
+.ys-trix {
+    min-height: 180px;
+    border: 1px solid #cbd5e1;
+    border-radius: 1rem;
+    background: #ffffff;
+    padding: 0.5rem 0.75rem;
+    cursor: text;
+    position: relative;
+    z-index: 1;
+}
+
+.ys-trix:focus-within {
+    border-color: rgba(0, 50, 109, 0.55);
+    box-shadow: 0 0 0 3px rgba(0, 50, 109, 0.15);
+}
+
+.ys-trix [contenteditable="true"] {
+    cursor: text;
+}
+
+.ys-rich-content p + p {
+    margin-top: 0.75rem;
+}
+
+.ys-rich-content ul,
+.ys-rich-content ol {
+    margin-top: 0.75rem;
+    margin-right: 1.1rem;
+}
+
+.ys-rich-content ul {
+    list-style: disc;
+}
+
+.ys-rich-content ol {
+    list-style: decimal;
+}
+
+.ys-footer {
+    @apply border-t border-slate-200 bg-white py-6;
+}
+
+.dark .ys-footer {
+    @apply border-slate-800 bg-slate-950;
+}
+
+.ys-footer__inner {
+    @apply flex flex-col items-center justify-between gap-3 text-center text-sm text-slate-600 lg:flex-row;
+}
+
+.dark .ys-footer__inner {
+    @apply text-slate-300;
+}
+
+.ys-footer__inner img {
+    @apply h-10 w-auto;
+}
+
+.ys-footer__inner a {
+    @apply font-bold text-blue-900 hover:text-blue-700;
+}
+
+.dark .ys-footer__inner a {
+    @apply text-blue-300 hover:text-blue-200;
+}
+
+.hrm-panel {
+    background: radial-gradient(circle at 10% 0%, rgba(0, 50, 109, 0.1), transparent 34%),
+        radial-gradient(circle at 88% 0%, rgba(229, 27, 34, 0.12), transparent 33%),
+        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+}
+
+.ys-admin-shell {
+    min-height: 100vh;
+}
+
+.ys-admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.ys-admin-header__inner {
+    @apply mx-auto w-full max-w-7xl px-4 py-3;
+}
+
+.ys-admin-header__top {
+    @apply flex items-center justify-between gap-4;
+}
+
+.ys-admin-brand {
+    @apply min-w-[210px] shrink-0;
+}
+
+.ys-admin-brand__kicker {
+    @apply block text-xs font-bold tracking-wide text-slate-500;
+}
+
+.ys-admin-brand h1 {
+    @apply text-lg font-black text-slate-900;
+}
+
+.ys-admin-brand h1 small {
+    @apply mr-1 text-base font-bold text-slate-600;
+}
+
+.ys-admin-nav-wrap {
+    @apply mt-3 overflow-x-auto pb-1;
+    scrollbar-width: thin;
+}
+
+.ys-admin-nav {
+    @apply flex min-w-max items-center gap-2;
+    white-space: nowrap;
+}
+
+.ys-admin-nav__link {
+    @apply inline-flex rounded-2xl border border-transparent px-3 py-2 text-sm font-bold text-slate-700 transition;
+}
+
+.ys-admin-nav__link:hover {
+    background: rgba(0, 50, 109, 0.08);
+    color: #00326d;
+}
+
+.ys-admin-nav__link.is-active {
+    border-color: rgba(0, 50, 109, 0.22);
+    background: rgba(0, 50, 109, 0.12);
+    color: #00326d;
+}
+
+.ys-admin-logout {
+    @apply shrink-0;
+}
+
+@media (max-width: 1024px) {
+    .ys-admin-brand h1 small {
+        @apply hidden;
+    }
+}
+
+.ys-admin-main {
+    @apply mx-auto w-full max-w-7xl px-4 py-6;
+}
+
+.ys-admin-alert {
+    @apply mb-4 rounded-2xl border px-4 py-3 text-sm;
+}
+
+.ys-admin-alert--success {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+}
+
+.ys-admin-alert--error {
+    @apply border-rose-200 bg-rose-50 text-rose-700;
+}
+
+.hrm-panel .card {
+    @apply rounded-3xl border border-slate-200/90 bg-white/90;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(4px);
+}
+
+.hrm-panel .badge {
+    @apply rounded-full px-3 py-1 text-xs font-extrabold;
+}
+
+.hrm-panel h2 {
+    @apply text-slate-900;
+}
+
+.hrm-panel a.text-cyan-700 {
+    color: #00326d;
+    font-weight: 800;
+}
+
+.hrm-panel a.text-cyan-700:hover {
+    color: #001d3f;
+}
+
+.hrm-panel .bg-cyan-600 {
+    background-color: #00326d !important;
+    box-shadow: 0 12px 28px rgba(0, 50, 109, 0.2);
+}
+
+.hrm-panel .bg-cyan-600:hover,
+.hrm-panel .hover\:bg-cyan-700:hover {
+    background-color: #00244f !important;
+}
+
+.hrm-panel .text-cyan-700 {
+    color: #00326d !important;
+}
+
+.hrm-panel .border-cyan-300 {
+    border-color: rgba(0, 50, 109, 0.35) !important;
+}
+
+.hrm-panel .bg-cyan-50 {
+    background-color: rgba(0, 50, 109, 0.08) !important;
+}
+
+.hrm-panel input,
+.hrm-panel select,
+.hrm-panel textarea {
+    @apply rounded-2xl border-slate-300 bg-white/95 text-sm text-slate-800;
+}
+
+.hrm-panel input:focus,
+.hrm-panel select:focus,
+.hrm-panel textarea:focus {
+    border-color: rgba(0, 50, 109, 0.55);
+    box-shadow: 0 0 0 3px rgba(0, 50, 109, 0.15);
+}
+
+.hrm-panel table {
+    @apply w-full;
+}
+
+.hrm-panel table thead {
+    background: linear-gradient(120deg, rgba(0, 50, 109, 0.1), rgba(229, 27, 34, 0.07));
+}
+
+.hrm-panel table thead th {
+    @apply text-xs font-extrabold tracking-wide text-slate-700;
+}
+
+.hrm-panel table tbody tr {
+    @apply border-t border-slate-100;
+}
+
+.hrm-panel table tbody tr:hover {
+    background: rgba(15, 23, 42, 0.02);
+}
+
+.hrm-panel nav[role="navigation"] .relative.inline-flex {
+    @apply rounded-xl border border-slate-200 bg-white text-slate-600;
+}
+
+.hrm-panel nav[role="navigation"] .relative.inline-flex:hover {
+    @apply bg-slate-50 text-slate-900;
+}
+
+.ys-admin-hero {
+    background: linear-gradient(120deg, #001d3f 0%, #00326d 56%, #0a3c78 100%);
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+}
+
+.ys-admin-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(229, 27, 34, 0.32), transparent 35%),
+        radial-gradient(circle at 15% 80%, rgba(255, 255, 255, 0.15), transparent 40%);
+}
+
+.ys-admin-hero > * {
+    position: relative;
+}
+
+.ys-admin-hero__kicker {
+    @apply inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-black;
+}
+
+.ys-admin-hero h2 {
+    @apply mt-3 text-2xl font-black text-white lg:text-3xl;
+}
+
+.ys-admin-hero p {
+    @apply mt-2 max-w-3xl text-sm leading-7 text-slate-100;
+}
+
+.ys-kpi-card {
+    @apply rounded-3xl border border-slate-200/90 bg-white p-5;
+    box-shadow: 0 16px 44px rgba(15, 23, 42, 0.08);
+}
+
+.ys-kpi-card__label {
+    @apply text-xs font-black tracking-wide text-slate-500;
+}
+
+.ys-kpi-card strong {
+    @apply mt-2 block text-3xl font-black text-slate-900;
+}
+
+.ys-kpi-card small {
+    @apply mt-1 block text-xs text-slate-500;
+}
+
+.ys-admin-section-head {
+    @apply flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-5 py-4;
+}
+
+.ys-admin-section-head h3 {
+    @apply text-base font-black text-slate-900;
+}
+
+.ys-admin-link {
+    @apply text-sm font-extrabold text-blue-900 transition hover:text-blue-700;
+}
+
+@media (max-width: 1023px) {
+    .ys-header__actions .ys-btn {
+        display: none;
+    }
+
+    .ys-header__resume-btn {
+        display: none !important;
+    }
+
+    .ys-menu-btn {
+        display: inline-flex !important;
+        position: relative;
+        z-index: 61;
+    }
+
+    .ys-icon-btn {
+        flex: none;
+    }
+
+    .ys-header__actions {
+        gap: 8px;
+        margin-inline-start: auto;
+    }
+
+    .ys-drawer {
+        width: min(84vw, 320px);
+    }
+
+    .ys-hero {
+        min-height: auto;
+    }
+
+    .ys-hero__inner {
+        grid-template-columns: 1fr;
+    }
+
+    .ys-hero__visual {
+        order: -1;
+    }
+
+    .ys-filters {
+        display: none;
+    }
+
+    .ys-filters.is-open {
+        display: grid;
+    }
+
+    .ys-filter-toggle {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .ys-culture__visual {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .ys-hero__actions .ys-btn {
+        @apply w-full;
+    }
+
+    .ys-hero__visual--illustrated {
+        @apply min-h-0;
+        margin-top: 8px;
+    }
+
+    .ys-hero-floating-card {
+        position: static;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .ys-general-apply,
+    .ys-process-layout {
+        @apply grid-cols-1;
+    }
+
+    .ys-hero-illustration {
+        max-height: 280px;
+    }
+
+    .ys-section-illustration {
+        max-height: 260px;
+        object-fit: cover;
+    }
+
+    .ys-growth-grid--timeline .ys-growth-card::before {
+        display: none;
+    }
+}

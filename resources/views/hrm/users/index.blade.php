@@ -1,0 +1,7 @@
+@extends('layouts.hrm', ['title' => 'مدیریت کاربران'])
+@section('content')
+<div class="mb-4 flex items-center justify-between"><h2 class="text-xl font-bold">کاربران پنل</h2><a class="rounded-lg bg-cyan-600 px-3 py-2 text-white" href="{{ route('hrm.users.create') }}">ایجاد کاربر</a></div>
+<div class="card overflow-hidden"><table class="min-w-full text-sm"><thead class="bg-slate-50"><tr><th class="px-4 py-3 text-right">نام</th><th class="px-4 py-3 text-right">ایمیل</th><th class="px-4 py-3 text-right">نقش</th><th class="px-4 py-3 text-right">دپارتمان‌ها</th><th class="px-4 py-3 text-right">وضعیت</th><th class="px-4 py-3 text-right">عملیات</th></tr></thead><tbody>@foreach($users as $user)<tr class="border-t"><td class="px-4 py-3">{{ $user->name }}</td><td class="px-4 py-3">{{ $user->email }}</td><td class="px-4 py-3">{{ $user->roles->pluck('name')->join('، ') ?: '---' }}</td><td class="px-4 py-3">{{ $user->departments->pluck('name')->join('، ') ?: '---' }}</td><td class="px-4 py-3">{{ $user->status === 'active' ? 'فعال' : 'غیرفعال' }}</td><td class="px-4 py-3"><div class="flex items-center gap-3"><a class="text-amber-700" href="{{ route('hrm.users.edit', $user) }}">ویرایش</a>@if((int)$user->id !== (int)auth()->id())<form method="post" action="{{ route('hrm.users.destroy', $user) }}" onsubmit="return confirm('کاربر حذف شود؟');">@csrf @method('DELETE')<button type="submit" class="text-rose-700">حذف</button></form>@endif</div></td></tr>@endforeach</tbody></table></div>
+<div class="mt-4">{{ $users->links() }}</div>
+@endsection
+

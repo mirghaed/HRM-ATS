@@ -1,0 +1,729 @@
+@startuml HRM_ATS_ERD
+' HRM / ATS Database ERD - PlantUML IE/Crow's Foot Notation
+' Generated for Laravel + Tailwind + Alpine.js + sms.ir HRM platform
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+skinparam roundcorner 8
+skinparam shadowing false
+skinparam entity {
+  BackgroundColor #FFFFFF
+  BorderColor #2D3748
+  FontColor #111827
+}
+hide circle
+
+' =========================
+' CORE AUTH / RBAC
+' =========================
+
+entity "users" as users {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(255)
+  * email : VARCHAR(255) <<UNIQUE>>
+  mobile : VARCHAR(30)
+  password : VARCHAR(255)
+  avatar_path : VARCHAR(255)
+  status : VARCHAR(50)  ' active, inactive, blocked
+  last_login_at : TIMESTAMP
+  email_verified_at : TIMESTAMP
+  remember_token : VARCHAR(100)
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  deleted_at : TIMESTAMP
+}
+
+entity "roles" as roles {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(255)
+  * guard_name : VARCHAR(255)
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "permissions" as permissions {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(255)
+  * guard_name : VARCHAR(255)
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "model_has_roles" as model_has_roles {
+  * role_id : BIGINT <<FK>>
+  * model_type : VARCHAR(255)
+  * model_id : BIGINT
+  --
+  <<PK: role_id, model_id, model_type>>
+}
+
+entity "model_has_permissions" as model_has_permissions {
+  * permission_id : BIGINT <<FK>>
+  * model_type : VARCHAR(255)
+  * model_id : BIGINT
+  --
+  <<PK: permission_id, model_id, model_type>>
+}
+
+entity "role_has_permissions" as role_has_permissions {
+  * permission_id : BIGINT <<FK>>
+  * role_id : BIGINT <<FK>>
+  --
+  <<PK: permission_id, role_id>>
+}
+
+entity "notifications" as notifications {
+  * id : CHAR(36) <<PK>>
+  --
+  * type : VARCHAR(255)
+  * notifiable_type : VARCHAR(255)
+  * notifiable_id : BIGINT
+  data : JSON
+  read_at : TIMESTAMP
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' =========================
+' HRM ORGANIZATION
+' =========================
+
+entity "departments" as departments {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(255)
+  * slug : VARCHAR(255) <<UNIQUE>>
+  description : TEXT
+  manager_user_id : BIGINT <<FK users.id, NULL>>
+  color : VARCHAR(30)
+  icon : VARCHAR(100)
+  is_active : BOOLEAN
+  sort_order : INT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  deleted_at : TIMESTAMP
+}
+
+entity "department_user" as department_user {
+  * id : BIGINT <<PK>>
+  --
+  * department_id : BIGINT <<FK>>
+  * user_id : BIGINT <<FK>>
+  * role : VARCHAR(50)  ' manager, reviewer, interviewer
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  <<UNIQUE: department_id, user_id, role>>
+}
+
+' =========================
+' JOB POSITIONS / CAREERS
+' =========================
+
+entity "job_positions" as job_positions {
+  * id : BIGINT <<PK>>
+  --
+  * department_id : BIGINT <<FK>>
+  * title : VARCHAR(255)
+  * slug : VARCHAR(255) <<UNIQUE>>
+  description : LONGTEXT
+  responsibilities : LONGTEXT
+  requirements : LONGTEXT
+  benefits : LONGTEXT
+  employment_type : ENUM  ' full_time, part_time, project_based, internship, contract
+  work_mode : ENUM        ' onsite, remote, hybrid
+  location : VARCHAR(255)
+  salary_min : BIGINT
+  salary_max : BIGINT
+  salary_currency : VARCHAR(10)
+  is_salary_visible_public : BOOLEAN
+  status : ENUM           ' draft, published, paused, closed, archived
+  is_public : BOOLEAN
+  default_recruiter_id : BIGINT <<FK users.id, NULL>>
+  default_interviewer_id : BIGINT <<FK users.id, NULL>>
+  capacity : INT
+  priority : INT
+  opened_at : TIMESTAMP
+  closed_at : TIMESTAMP
+  created_by : BIGINT <<FK users.id, NULL>>
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  deleted_at : TIMESTAMP
+}
+
+entity "job_position_interviewer" as job_position_interviewer {
+  * id : BIGINT <<PK>>
+  --
+  * job_position_id : BIGINT <<FK>>
+  * user_id : BIGINT <<FK>>
+  is_default : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  <<UNIQUE: job_position_id, user_id>>
+}
+
+entity "job_position_questions" as job_position_questions {
+  * id : BIGINT <<PK>>
+  --
+  * job_position_id : BIGINT <<FK>>
+  * question : VARCHAR(1000)
+  * type : ENUM ' text, textarea, number, select, radio, checkbox, file
+  options : JSON
+  placeholder : VARCHAR(255)
+  help_text : TEXT
+  validation_rules : JSON
+  is_required : BOOLEAN
+  sort_order : INT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "career_landing_sections" as career_landing_sections {
+  * id : BIGINT <<PK>>
+  --
+  * key : VARCHAR(100) <<UNIQUE>> ' hero, values, teams, process, faq, cta
+  * title : VARCHAR(255)
+  subtitle : VARCHAR(500)
+  content : LONGTEXT
+  image_path : VARCHAR(255)
+  button_text : VARCHAR(100)
+  button_url : VARCHAR(255)
+  payload : JSON
+  is_active : BOOLEAN
+  sort_order : INT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' =========================
+' RESUME SOURCES / IMPORTS
+' =========================
+
+entity "application_sources" as application_sources {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(255)
+  * key : VARCHAR(100) <<UNIQUE>> ' website_form, jobinja, jobvision, iranestekhdam, manual
+  * type : ENUM ' manual, website_form, job_board, referral, email, social, import, api, other
+  supports_auto_import : BOOLEAN
+  is_active : BOOLEAN
+  config : JSON
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "source_connectors" as source_connectors {
+  * id : BIGINT <<PK>>
+  --
+  * source_id : BIGINT <<FK>>
+  * driver : VARCHAR(150) ' Manual, WebsiteForm, Excel, Email, Jobinja, JobVision, IranEstekhdam
+  * mode : ENUM ' manual, api, imap, excel, webhook
+  status : ENUM ' disabled, active, error
+  endpoint_url : VARCHAR(500)
+  encrypted_config : TEXT
+  last_sync_at : TIMESTAMP
+  last_error : LONGTEXT
+  created_by : BIGINT <<FK users.id, NULL>>
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "import_runs" as import_runs {
+  * id : BIGINT <<PK>>
+  --
+  * source_id : BIGINT <<FK>>
+  connector_id : BIGINT <<FK source_connectors.id, NULL>>
+  status : ENUM ' pending, running, completed, failed, partial
+  total_items : INT
+  created_items : INT
+  updated_items : INT
+  duplicate_items : INT
+  failed_items : INT
+  meta : JSON
+  error_message : LONGTEXT
+  created_by : BIGINT <<FK users.id, NULL>>
+  started_at : TIMESTAMP
+  finished_at : TIMESTAMP
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "import_items" as import_items {
+  * id : BIGINT <<PK>>
+  --
+  * import_run_id : BIGINT <<FK>>
+  application_id : BIGINT <<FK applications.id, NULL>>
+  row_number : INT
+  external_reference : VARCHAR(255)
+  status : ENUM ' pending, created, updated, duplicate, failed, skipped
+  raw_payload : JSON
+  normalized_payload : JSON
+  error_message : TEXT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' =========================
+' CANDIDATES / APPLICATIONS
+' =========================
+
+entity "candidates" as candidates {
+  * id : BIGINT <<PK>>
+  --
+  first_name : VARCHAR(255)
+  last_name : VARCHAR(255)
+  * full_name : VARCHAR(255)
+  mobile : VARCHAR(30)
+  normalized_mobile : VARCHAR(30) <<INDEX>>
+  email : VARCHAR(255)
+  normalized_email : VARCHAR(255) <<INDEX>>
+  city : VARCHAR(255)
+  current_job_title : VARCHAR(255)
+  current_company : VARCHAR(255)
+  linkedin_url : VARCHAR(500)
+  portfolio_url : VARCHAR(500)
+  meta : JSON
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  deleted_at : TIMESTAMP
+}
+
+entity "applications" as applications {
+  * id : BIGINT <<PK>>
+  --
+  * candidate_id : BIGINT <<FK>>
+  job_position_id : BIGINT <<FK, NULL>>
+  department_id : BIGINT <<FK, NULL>>
+  source_id : BIGINT <<FK, NULL>>
+  source_reference : VARCHAR(255)
+  source_profile_url : VARCHAR(500)
+  current_status_id : BIGINT <<FK recruitment_statuses.id, NULL>>
+  expected_salary_min : BIGINT
+  expected_salary_max : BIGINT
+  salary_fit_score : TINYINT
+  skills_fit_score : TINYINT
+  experience_fit_score : TINYINT
+  overall_score : TINYINT
+  cover_letter : LONGTEXT
+  form_answers : JSON
+  raw_payload : JSON
+  assigned_recruiter_id : BIGINT <<FK users.id, NULL>>
+  assigned_department_manager_id : BIGINT <<FK users.id, NULL>>
+  assigned_interviewer_id : BIGINT <<FK users.id, NULL>>
+  rejection_reason_id : BIGINT <<FK rejection_reasons.id, NULL>>
+  is_duplicate : BOOLEAN
+  duplicate_of_application_id : BIGINT <<FK applications.id, NULL>>
+  applied_at : TIMESTAMP
+  last_status_changed_at : TIMESTAMP
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  deleted_at : TIMESTAMP
+}
+
+entity "application_answers" as application_answers {
+  * id : BIGINT <<PK>>
+  --
+  * application_id : BIGINT <<FK>>
+  * question_id : BIGINT <<FK job_position_questions.id>>
+  answer_text : LONGTEXT
+  answer_json : JSON
+  file_id : BIGINT <<FK candidate_files.id, NULL>>
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "candidate_files" as candidate_files {
+  * id : BIGINT <<PK>>
+  --
+  * candidate_id : BIGINT <<FK>>
+  application_id : BIGINT <<FK, NULL>>
+  * type : ENUM ' resume, portfolio, certificate, other
+  * disk : VARCHAR(50)
+  * path : VARCHAR(500)
+  original_name : VARCHAR(255)
+  mime_type : VARCHAR(150)
+  size : BIGINT
+  parsed_text : LONGTEXT
+  parsed_json : JSON
+  uploaded_by : BIGINT <<FK users.id, NULL>>
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "tags" as tags {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(100)
+  * slug : VARCHAR(120) <<UNIQUE>>
+  color : VARCHAR(30)
+  type : VARCHAR(50) ' candidate, application, general
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "candidate_tag" as candidate_tag {
+  * id : BIGINT <<PK>>
+  --
+  * candidate_id : BIGINT <<FK>>
+  * tag_id : BIGINT <<FK>>
+  created_at : TIMESTAMP
+  <<UNIQUE: candidate_id, tag_id>>
+}
+
+entity "application_tag" as application_tag {
+  * id : BIGINT <<PK>>
+  --
+  * application_id : BIGINT <<FK>>
+  * tag_id : BIGINT <<FK>>
+  created_at : TIMESTAMP
+  <<UNIQUE: application_id, tag_id>>
+}
+
+' =========================
+' SKILLS / SCORING
+' =========================
+
+entity "skills" as skills {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(255) <<UNIQUE>>
+  category : VARCHAR(255)
+  normalized_name : VARCHAR(255) <<INDEX>>
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "job_position_skill" as job_position_skill {
+  * id : BIGINT <<PK>>
+  --
+  * job_position_id : BIGINT <<FK>>
+  * skill_id : BIGINT <<FK>>
+  is_required : BOOLEAN
+  weight : TINYINT
+  min_level : ENUM ' beginner, intermediate, advanced, expert
+  min_years_experience : TINYINT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  <<UNIQUE: job_position_id, skill_id>>
+}
+
+entity "candidate_skill" as candidate_skill {
+  * id : BIGINT <<PK>>
+  --
+  * candidate_id : BIGINT <<FK>>
+  * skill_id : BIGINT <<FK>>
+  level : ENUM ' beginner, intermediate, advanced, expert
+  years_experience : TINYINT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  <<UNIQUE: candidate_id, skill_id>>
+}
+
+' =========================
+' STATUS WORKFLOW
+' =========================
+
+entity "sms_templates" as sms_templates {
+  * id : BIGINT <<PK>>
+  --
+  * title : VARCHAR(255)
+  * key : VARCHAR(100) <<UNIQUE>>
+  provider : VARCHAR(50) ' smsir
+  provider_template_id : VARCHAR(100)
+  body_preview : TEXT
+  variables : JSON
+  is_active : BOOLEAN
+  auto_send : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "recruitment_statuses" as recruitment_statuses {
+  * id : BIGINT <<PK>>
+  --
+  * key : VARCHAR(100) <<UNIQUE>>
+  * title : VARCHAR(255)
+  description : TEXT
+  color : VARCHAR(30)
+  sort_order : INT
+  is_default : BOOLEAN
+  is_terminal : BOOLEAN
+  is_success : BOOLEAN
+  requires_note : BOOLEAN
+  can_schedule_interview : BOOLEAN
+  sms_template_id : BIGINT <<FK sms_templates.id, NULL>>
+  notify_candidate : BOOLEAN
+  notify_department_manager : BOOLEAN
+  notify_interviewer : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "recruitment_status_transitions" as recruitment_status_transitions {
+  * id : BIGINT <<PK>>
+  --
+  * from_status_id : BIGINT <<FK recruitment_statuses.id>>
+  * to_status_id : BIGINT <<FK recruitment_statuses.id>>
+  allowed_roles : JSON
+  requires_note : BOOLEAN
+  requires_interview : BOOLEAN
+  is_active : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+  <<UNIQUE: from_status_id, to_status_id>>
+}
+
+entity "application_status_histories" as application_status_histories {
+  * id : BIGINT <<PK>>
+  --
+  * application_id : BIGINT <<FK>>
+  from_status_id : BIGINT <<FK recruitment_statuses.id, NULL>>
+  * to_status_id : BIGINT <<FK recruitment_statuses.id>>
+  changed_by : BIGINT <<FK users.id, NULL>>
+  note : TEXT
+  meta : JSON
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "rejection_reasons" as rejection_reasons {
+  * id : BIGINT <<PK>>
+  --
+  * title : VARCHAR(255)
+  description : TEXT
+  is_active : BOOLEAN
+  sort_order : INT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' =========================
+' NOTES / INTERVIEWS / SMS
+' =========================
+
+entity "application_notes" as application_notes {
+  * id : BIGINT <<PK>>
+  --
+  * application_id : BIGINT <<FK>>
+  user_id : BIGINT <<FK users.id, NULL>>
+  * type : ENUM ' internal_note, phone_call_note, interview_note, salary_note, rejection_note, system_note
+  * body : LONGTEXT
+  visibility : ENUM ' hr_only, department, all_internal
+  is_pinned : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "interviews" as interviews {
+  * id : BIGINT <<PK>>
+  --
+  * application_id : BIGINT <<FK>>
+  * candidate_id : BIGINT <<FK>>
+  job_position_id : BIGINT <<FK, NULL>>
+  department_id : BIGINT <<FK, NULL>>
+  * interviewer_id : BIGINT <<FK users.id>>
+  scheduled_by : BIGINT <<FK users.id, NULL>>
+  * type : ENUM ' onsite, online, phone
+  * status : ENUM ' scheduled, completed, cancelled, no_show, rescheduled
+  * start_at : TIMESTAMP
+  end_at : TIMESTAMP
+  location_title : VARCHAR(255)
+  address : TEXT
+  online_meeting_url : VARCHAR(500)
+  description : TEXT
+  score : TINYINT
+  result_note : LONGTEXT
+  send_sms_to_candidate : BOOLEAN
+  candidate_sms_sent_at : TIMESTAMP
+  reminder_sms_sent_at : TIMESTAMP
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "interview_reminders" as interview_reminders {
+  * id : BIGINT <<PK>>
+  --
+  * interview_id : BIGINT <<FK>>
+  type : VARCHAR(50) ' sms, notification
+  send_at : TIMESTAMP
+  sent_at : TIMESTAMP
+  status : ENUM ' pending, sent, failed, skipped
+  error_message : TEXT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "sms_logs" as sms_logs {
+  * id : BIGINT <<PK>>
+  --
+  candidate_id : BIGINT <<FK candidates.id, NULL>>
+  application_id : BIGINT <<FK applications.id, NULL>>
+  interview_id : BIGINT <<FK interviews.id, NULL>>
+  sms_template_id : BIGINT <<FK sms_templates.id, NULL>>
+  * mobile : VARCHAR(30)
+  provider : VARCHAR(50)
+  provider_template_id : VARCHAR(100)
+  message_text : TEXT
+  parameters : JSON
+  status : ENUM ' pending, sent, failed, delivered, unknown
+  provider_message_id : VARCHAR(255)
+  provider_response : JSON
+  sent_by_user_id : BIGINT <<FK users.id, NULL>>
+  sent_at : TIMESTAMP
+  failed_at : TIMESTAMP
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' =========================
+' SETTINGS / LOGGING
+' =========================
+
+entity "hrm_settings" as hrm_settings {
+  * id : BIGINT <<PK>>
+  --
+  * key : VARCHAR(150) <<UNIQUE>>
+  value : LONGTEXT
+  type : VARCHAR(50) ' string, boolean, integer, json, encrypted
+  group : VARCHAR(100) ' company, sms, interview, landing, import, security
+  is_public : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "hrm_activity_logs" as hrm_activity_logs {
+  * id : BIGINT <<PK>>
+  --
+  application_id : BIGINT <<FK applications.id, NULL>>
+  candidate_id : BIGINT <<FK candidates.id, NULL>>
+  user_id : BIGINT <<FK users.id, NULL>>
+  * action : VARCHAR(150)
+  * title : VARCHAR(255)
+  description : LONGTEXT
+  properties : JSON
+  ip_address : VARCHAR(45)
+  user_agent : TEXT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' =========================
+' RELATIONSHIPS - AUTH / RBAC
+' =========================
+
+roles ||--o{ model_has_roles : grants
+permissions ||--o{ model_has_permissions : grants
+roles ||--o{ role_has_permissions : has
+permissions ||--o{ role_has_permissions : assigned_to
+users ||--o{ notifications : receives
+
+' =========================
+' RELATIONSHIPS - ORGANIZATION
+' =========================
+
+users |o--o{ departments : manages
+users ||--o{ department_user : member_of
+departments ||--o{ department_user : has_members
+departments ||--o{ job_positions : owns
+
+' =========================
+' RELATIONSHIPS - JOBS
+' =========================
+
+users |o--o{ job_positions : created_by
+users |o--o{ job_positions : default_recruiter
+users |o--o{ job_positions : default_interviewer
+job_positions ||--o{ job_position_interviewer : interviewers
+users ||--o{ job_position_interviewer : can_interview
+job_positions ||--o{ job_position_questions : asks
+job_positions ||--o{ job_position_skill : requires
+skills ||--o{ job_position_skill : required_for
+
+' =========================
+' RELATIONSHIPS - SOURCES / IMPORTS
+' =========================
+
+application_sources ||--o{ source_connectors : connector
+users |o--o{ source_connectors : configured_by
+application_sources ||--o{ import_runs : imports
+source_connectors |o--o{ import_runs : runs
+users |o--o{ import_runs : started_by
+import_runs ||--o{ import_items : contains
+applications |o--o{ import_items : created_from
+
+' =========================
+' RELATIONSHIPS - CANDIDATES / APPLICATIONS
+' =========================
+
+candidates ||--o{ applications : submits
+job_positions |o--o{ applications : receives
+departments |o--o{ applications : belongs_to
+application_sources |o--o{ applications : source
+recruitment_statuses |o--o{ applications : current_status
+rejection_reasons |o--o{ applications : reason
+applications |o--o{ applications : duplicate_of
+users |o--o{ applications : assigned_recruiter
+users |o--o{ applications : assigned_department_manager
+users |o--o{ applications : assigned_interviewer
+
+candidates ||--o{ candidate_files : files
+applications |o--o{ candidate_files : attached_files
+users |o--o{ candidate_files : uploaded_by
+
+applications ||--o{ application_answers : answers
+job_position_questions ||--o{ application_answers : answered_question
+candidate_files |o--o{ application_answers : answer_file
+
+candidates ||--o{ candidate_skill : has_skill
+skills ||--o{ candidate_skill : owned_by
+
+candidates ||--o{ candidate_tag : tagged
+applications ||--o{ application_tag : tagged
+tags ||--o{ candidate_tag : candidate_label
+tags ||--o{ application_tag : application_label
+
+' =========================
+' RELATIONSHIPS - WORKFLOW
+' =========================
+
+sms_templates |o--o{ recruitment_statuses : status_sms
+recruitment_statuses ||--o{ recruitment_status_transitions : from_status
+recruitment_statuses ||--o{ recruitment_status_transitions : to_status
+applications ||--o{ application_status_histories : status_history
+recruitment_statuses |o--o{ application_status_histories : from_status
+recruitment_statuses ||--o{ application_status_histories : to_status
+users |o--o{ application_status_histories : changed_by
+
+' =========================
+' RELATIONSHIPS - NOTES / INTERVIEWS / SMS
+' =========================
+
+applications ||--o{ application_notes : notes
+users |o--o{ application_notes : writes
+
+applications ||--o{ interviews : interviews
+candidates ||--o{ interviews : attends
+job_positions |o--o{ interviews : for_job
+departments |o--o{ interviews : for_department
+users ||--o{ interviews : interviewer
+users |o--o{ interviews : scheduled_by
+interviews ||--o{ interview_reminders : reminders
+
+candidates |o--o{ sms_logs : sms
+applications |o--o{ sms_logs : sms
+interviews |o--o{ sms_logs : sms
+sms_templates |o--o{ sms_logs : template
+users |o--o{ sms_logs : sent_by
+
+' =========================
+' RELATIONSHIPS - LOGGING
+' =========================
+
+applications |o--o{ hrm_activity_logs : timeline
+candidates |o--o{ hrm_activity_logs : timeline
+users |o--o{ hrm_activity_logs : actor
+
+@enduml
