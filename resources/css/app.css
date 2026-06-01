@@ -1,30 +1,34 @@
 @font-face {
-    font-family: "Vazirmatn";
-    src: url("../fonts/Vazirmatn-Regular.woff2") format("woff2");
+    font-family: "PeydaWebFaNum";
+    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Regular.woff2") format("woff2"),
+        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Regular.woff") format("woff");
     font-style: normal;
     font-weight: 400;
     font-display: swap;
 }
 
 @font-face {
-    font-family: "Vazirmatn";
-    src: url("../fonts/Vazirmatn-Medium.woff2") format("woff2");
+    font-family: "PeydaWebFaNum";
+    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Medium.woff2") format("woff2"),
+        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Medium.woff") format("woff");
     font-style: normal;
     font-weight: 500;
     font-display: swap;
 }
 
 @font-face {
-    font-family: "Vazirmatn";
-    src: url("../fonts/Vazirmatn-Bold.woff2") format("woff2");
+    font-family: "PeydaWebFaNum";
+    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Bold.woff2") format("woff2"),
+        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Bold.woff") format("woff");
     font-style: normal;
     font-weight: 700;
     font-display: swap;
 }
 
 @font-face {
-    font-family: "Vazirmatn";
-    src: url("../fonts/Vazirmatn-Black.woff2") format("woff2");
+    font-family: "PeydaWebFaNum";
+    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Black.woff2") format("woff2"),
+        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Black.woff") format("woff");
     font-style: normal;
     font-weight: 900;
     font-display: swap;
@@ -51,7 +55,7 @@
 
 html,
 body {
-    font-family: "Vazirmatn", sans-serif;
+    font-family: "PeydaWebFaNum", sans-serif;
 }
 
 body {
@@ -354,7 +358,7 @@ body {
 }
 
 .dark .ys-gallery-section {
-    background: #fff;
+    background: rgba(2, 6, 23, 0.78);
 }
 
 .ys-gallery-shell {
