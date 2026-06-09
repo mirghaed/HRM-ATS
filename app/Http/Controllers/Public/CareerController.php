@@ -14,6 +14,8 @@ use App\Models\JobPosition;
 use App\Models\RecruitmentStatus;
 use App\Services\Captcha\NumericCaptchaService;
 use App\Services\HRM\ApplicationCreator;
+use App\Services\HRM\JobPositionVisitRecorder;
+use Illuminate\Http\Request;
 
 class CareerController extends Controller
 {
@@ -91,9 +93,11 @@ class CareerController extends Controller
         ]);
     }
 
-    public function show(JobPosition $jobPosition)
+    public function show(Request $request, JobPosition $jobPosition, JobPositionVisitRecorder $visitRecorder)
     {
         abort_if($jobPosition->status !== 'published', 404);
+
+        $visitRecorder->record($jobPosition, $request);
 
         $jobPosition->load('department', 'questions', 'requiredSkills');
 

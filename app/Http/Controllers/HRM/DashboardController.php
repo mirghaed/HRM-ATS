@@ -3,21 +3,17 @@
 namespace App\Http\Controllers\HRM;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
-use App\Models\Department;
-use App\Models\Interview;
-use App\Models\JobPosition;
+use App\Services\HRM\DashboardMetricsService;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request, DashboardMetricsService $metricsService)
     {
-        return view('hrm.dashboard', [
-            'departmentCount' => Department::query()->count(),
-            'openJobCount' => JobPosition::query()->where('status', 'published')->count(),
-            'applicationCount' => Application::query()->count(),
-            'pendingInterviews' => Interview::query()->where('status', 'scheduled')->where('start_at', '>=', now())->count(),
-            'recentApplications' => Application::query()->with('candidate', 'jobPosition', 'currentStatus')->latest()->take(8)->get(),
-        ]);
+        abort_unless(auth()->user()?->can('dashboard.view'), 403);
+
+        $range = $metricsService->normalizeRange((string) $request->query('range', '30d'));
+
+        return view('hrm.dashboard', $metricsService->get($range));
     }
 }

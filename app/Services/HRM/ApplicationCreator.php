@@ -10,6 +10,7 @@ use App\Models\ApplicationStatusHistory;
 use App\Models\CandidateFile;
 use App\Models\RecruitmentStatus;
 use App\Jobs\HRM\ParseResumeFileJob;
+use App\Support\DashboardCache;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -142,6 +143,8 @@ class ApplicationCreator
             }
 
             event(new ApplicationCreated($application));
+
+            DashboardCache::forget();
 
             return $application;
         });

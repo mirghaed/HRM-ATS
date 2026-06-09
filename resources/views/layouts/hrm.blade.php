@@ -23,10 +23,24 @@
                     <h1>{{ $companyName }} <small>{{ $panelTitle }}</small></h1>
                 </div>
 
-                <form method="post" action="{{ route('logout') }}" class="ys-admin-logout">
-                    @csrf
-                    <button type="submit" class="ys-btn ys-btn--primary">خروج</button>
-                </form>
+                <div class="ys-admin-header__actions">
+                    @if(auth()->user()?->can('applications.view_all') || auth()->user()?->can('applications.view_department') || auth()->user()?->can('applications.view_assigned'))
+                        <form class="ys-admin-search" method="get" action="{{ route('hrm.applications.index') }}">
+                            <input type="search" name="q" value="{{ request('q') }}" placeholder="جستجو در رزومه‌ها، موقعیت‌ها...">
+                        </form>
+                    @endif
+
+                    @can('settings.view')
+                        <a href="{{ route('hrm.settings.edit') }}" class="ys-icon-btn" aria-label="تنظیمات">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13a7.7 7.7 0 0 0 .1-2l2-1.5-2-3.5-2.3 1a7.5 7.5 0 0 0-1.7-1L15 2h-6l-.5 3.5a7.5 7.5 0 0 0-1.7 1l-2.3-1-2 3.5 2 1.5a7.7 7.7 0 0 0 .1 2l-2 1.5 2 3.5 2.3-1a7.5 7.5 0 0 0 1.7 1L9 22h6l.5-3.5a7.5 7.5 0 0 0 1.7-1l2.3 1 2-3.5-2-1.5Z" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </a>
+                    @endcan
+
+                    <form method="post" action="{{ route('logout') }}" class="ys-admin-logout">
+                        @csrf
+                        <button type="submit" class="ys-btn ys-btn--danger">خروج</button>
+                    </form>
+                </div>
             </div>
 
             <div class="ys-admin-nav-wrap">

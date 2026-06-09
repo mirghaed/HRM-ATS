@@ -95,6 +95,16 @@ class JobPosition extends Model
             ->withTimestamps();
     }
 
+    public function visitsCounter()
+    {
+        return visits($this, 'public_page');
+    }
+
+    public function visitsRelation()
+    {
+        return visits($this)->relation();
+    }
+
     public function plainTextSummary(?int $limit = null): string
     {
         $html = (string) ($this->description ?: $this->requirements ?: '');

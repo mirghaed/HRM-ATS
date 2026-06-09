@@ -7,15 +7,35 @@ use App\Http\Requests\HRM\JobPositionRequest;
 use App\Models\Department;
 use App\Models\JobPosition;
 use App\Models\User;
+use App\Services\HRM\JobPositionVisitRecorder;
+use App\Support\DashboardCache;
 
 class JobPositionController extends Controller
 {
-    public function index()
+    public function index(JobPositionVisitRecorder $visitRecorder)
     {
         $this->authorize('viewAny', JobPosition::class);
 
+        $jobPositions = JobPosition::query()
+            ->with('department')
+            ->withCount('applications')
+            ->latest()
+            ->paginate(15);
+
+        $jobPositions->getCollection()->transform(function (JobPosition $job) use ($visitRecorder) {
+            $stats = $visitRecorder->stats($job);
+            $job->views_total = $stats['views_total'];
+            $job->views_today = $stats['views_today'];
+            $job->conversion_rate = $visitRecorder->conversionRate(
+                (int) $job->applications_count,
+                $stats['views_total'],
+            );
+
+            return $job;
+        });
+
         return view('hrm.job_positions.index', [
-            'jobPositions' => JobPosition::query()->with('department')->latest()->paginate(15),
+            'jobPositions' => $jobPositions,
         ]);
     }
 
@@ -50,6 +70,8 @@ class JobPositionController extends Controller
                 'sort_order' => $question['sort_order'] ?? 0,
             ]);
         }
+
+        DashboardCache::forget();
 
         return redirect()->route('hrm.job-positions.index')->with('success', 'موقعیت شغلی جدید ایجاد شد.');
     }
@@ -96,6 +118,8 @@ class JobPositionController extends Controller
             ]);
         }
 
+        DashboardCache::forget();
+
         return redirect()->route('hrm.job-positions.index')->with('success', 'موقعیت شغلی به‌روزرسانی شد.');
     }
 
@@ -104,6 +128,8 @@ class JobPositionController extends Controller
         $this->authorize('delete', $job_position);
 
         $job_position->delete();
+
+        DashboardCache::forget();
 
         return redirect()->route('hrm.job-positions.index')->with('success', 'موقعیت شغلی حذف شد.');
     }
