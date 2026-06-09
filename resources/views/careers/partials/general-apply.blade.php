@@ -55,7 +55,7 @@
 
                     <label>
                         <span>ایمیل</span>
-                        <input id="email" name="email" type="email" value="{{ old('email') }}" placeholder="name@example.com">
+                        <input id="email" name="email" type="email" value="{{ old('email') }}" placeholder="name@example.com" class="ys-ltr-input">
                         @error('email')<em>{{ $message }}</em>@enderror
                     </label>
 
@@ -85,7 +85,7 @@
 
                     <label>
                         <span>لینک نمونه‌کار / LinkedIn</span>
-                        <input name="portfolio_url" type="url" value="{{ old('portfolio_url') }}" placeholder="https://...">
+                        <input name="portfolio_url" type="url" value="{{ old('portfolio_url') }}" placeholder="https://..." class="ys-ltr-input">
                         @error('portfolio_url')<em>{{ $message }}</em>@enderror
                     </label>
 

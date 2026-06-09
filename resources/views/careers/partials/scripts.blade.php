@@ -12,6 +12,8 @@
             submitErrors: [],
             filtersOpen: false,
             hasAnyJobs: !!config.hasAnyJobs,
+            logoUrl: config.logoUrl || '',
+            logoUrlDark: config.logoUrlDark || '',
             visibleJobsCount: 0,
             captchaSrc: '{{ route('careers.captcha.image') }}?v={{ time() }}',
             filters: {
@@ -50,6 +52,9 @@
                 this.dark = !this.dark;
                 document.documentElement.classList.toggle('dark', this.dark);
                 localStorage.setItem('yadak-theme', this.dark ? 'dark' : 'light');
+            },
+            get activeLogoUrl() {
+                return (this.dark && this.logoUrlDark) ? this.logoUrlDark : this.logoUrl;
             },
             matchCard(el) {
                 const title = (el.dataset.title || '').toLowerCase();

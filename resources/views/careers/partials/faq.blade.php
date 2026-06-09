@@ -2,13 +2,13 @@
     <section id="faq" class="ys-section">
         <div class="ys-container">
             <div class="ys-section-head ys-section-head--with-icon">
+                <div>
+                    <span class="ys-kicker">سوالات متداول</span>
+                    <h2>سوالات متداول</h2>
+                </div>
                 <span class="ys-section-head__icon" aria-hidden="true">
                     <x-career-icon name="faq" class="ys-icon-svg" />
                 </span>
-                <div>
-                    <span class="ys-kicker">سوالات متداول</span>
-                    <h2>{{ data_get($faqSection, 'title', 'پاسخ به سوالات شما') }}</h2>
-                </div>
             </div>
             <div class="ys-faq" x-data="{ openFaq: null }" @keydown.escape.window="openFaq = null">
                 @foreach($faqItems as $item)

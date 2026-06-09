@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class JobPosition extends Model
 {
@@ -92,5 +93,18 @@ class JobPosition extends Model
         return $this->belongsToMany(Skill::class, 'job_position_skill')
             ->withPivot(['is_required', 'weight', 'min_level', 'min_years_experience'])
             ->withTimestamps();
+    }
+
+    public function plainTextSummary(?int $limit = null): string
+    {
+        $html = (string) ($this->description ?: $this->requirements ?: '');
+        $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim(preg_replace('/\s+/u', ' ', $text) ?? '');
+
+        if ($limit === null) {
+            return $text;
+        }
+
+        return Str::limit($text, $limit);
     }
 }

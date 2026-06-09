@@ -32,8 +32,8 @@
     <div class="ys-container">
         <div class="ys-section-head">
             <div>
-                <span class="ys-kicker">تیم‌ها و دپارتمان‌ها</span>
-                <h2>تیم‌هایی که در {{ $companyName }} کنار هم کار می‌کنند</h2>
+                <span class="ys-kicker">{{ $departmentsKicker }}</span>
+                <h2>{{ $departmentsTitle }}</h2>
             </div>
         </div>
 

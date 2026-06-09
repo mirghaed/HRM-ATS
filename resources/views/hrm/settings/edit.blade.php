@@ -43,7 +43,7 @@
 
                 <div class="grid gap-4 md:grid-cols-2">
                     @foreach($items as $item)
-                        <div class="rounded-2xl border border-slate-200 p-4 md:col-span-{{ in_array($item['input'], ['textarea', 'gallery'], true) ? '2' : '1' }}">
+                        <div class="rounded-2xl border border-slate-200 p-4 md:col-span-{{ in_array($item['input'], ['textarea', 'gallery', 'logo', 'logo_dark'], true) ? '2' : '1' }}">
                             <input type="hidden" name="settings[{{ $idx }}][key]" value="{{ $item['key'] }}">
                             <input type="hidden" name="settings[{{ $idx }}][type]" value="{{ $item['type'] }}">
                             <input type="hidden" name="settings[{{ $idx }}][group]" value="{{ $item['group'] }}">
@@ -79,7 +79,7 @@
                                             <div class="mb-3 grid gap-3 md:grid-cols-12">
                                                 <div class="md:col-span-6">
                                                     <label class="mb-1 block text-xs font-semibold text-slate-600">مسیر تصویر</label>
-                                                    <input type="text" class="w-full rounded-xl border-slate-300" x-model.trim="slide.image" placeholder="/assets/careers/gallery/01.jpg">
+                                                    <input type="text" class="w-full rounded-xl border-slate-300" x-model.trim="slide.image" placeholder="/media/careers/gallery/gallery-01.jpg">
                                                 </div>
                                                 <div class="md:col-span-4">
                                                     <label class="mb-1 block text-xs font-semibold text-slate-600">متن جایگزین (Alt)</label>
@@ -121,6 +121,41 @@
                                     <div>
                                         <button type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700" @click="addSlide()">افزودن اسلاید</button>
                                     </div>
+                                </div>
+                            @elseif(in_array($item['input'], ['logo', 'logo_dark'], true))
+                                @php
+                                    $logoPath = old("settings.$idx.value", $item['value']);
+                                    $logoField = $item['input'] === 'logo_dark' ? 'logo_dark' : 'logo';
+                                    $logoPlaceholder = $item['input'] === 'logo_dark'
+                                        ? '/media/brand/logos-dark/logo-dark.png'
+                                        : '/media/brand/logos/logo.png';
+                                    $logoPreviewClass = $item['input'] === 'logo_dark'
+                                        ? 'h-16 w-auto rounded-lg border border-slate-700 bg-slate-900 object-contain p-2'
+                                        : 'h-16 w-auto rounded-lg border border-slate-200 bg-slate-50 object-contain p-2';
+                                @endphp
+                                <div class="space-y-3" x-data="logoSettingEditor(@js((string) $logoPath), '{{ route('hrm.settings.gallery-upload') }}', '{{ csrf_token() }}', @js($logoField))">
+                                    <div>
+                                        <label class="mb-1 block text-xs font-semibold text-slate-600">مسیر یا آدرس لوگو</label>
+                                        <input type="text" class="w-full rounded-xl border-slate-300" name="settings[{{ $idx }}][value]" x-model.trim="logoPath" placeholder="{{ $logoPlaceholder }}">
+                                    </div>
+
+                                    <div class="grid gap-3 md:grid-cols-12">
+                                        <div class="md:col-span-8">
+                                            <label class="mb-1 block text-xs font-semibold text-slate-600">آپلود از سیستم</label>
+                                            <input type="file" accept=".svg,.png,.jpg,.jpeg,.webp,image/svg+xml,image/png,image/jpeg,image/webp" class="w-full rounded-xl border-slate-300 text-xs" @change="setLogoFile($event)">
+                                        </div>
+                                        <div class="md:col-span-4 flex items-end">
+                                            <button type="button" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700" @click="uploadLogo()" :disabled="uploading">
+                                                <span x-show="!uploading">آپلود لوگو</span>
+                                                <span x-show="uploading" x-cloak>در حال آپلود...</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-xs text-rose-600" x-show="error" x-text="error" x-cloak></p>
+                                    <p class="text-xs text-slate-500">فرمت‌های مجاز: SVG، PNG، JPG، WEBP — حداکثر ۲ مگابایت</p>
+
+                                    <img x-show="previewUrl" :src="previewUrl" alt="پیش‌نمایش لوگو" class="{{ $logoPreviewClass }}" x-cloak>
                                 </div>
                             @elseif($item['input'] === 'boolean')
                                 <label class="inline-flex items-center gap-2 text-sm text-slate-700">
@@ -253,7 +288,12 @@
                     const payload = isJson ? await response.json() : null;
 
                     if (!response.ok || !payload || payload.status !== 'ok') {
-                        slide.error = payload?.message || 'آپلود تصویر انجام نشد. دوباره تلاش کنید.';
+                        if (response.status === 422 && payload?.errors) {
+                            const imageErrors = payload.errors.image || payload.errors.logo || payload.errors.logo_dark;
+                            slide.error = Array.isArray(imageErrors) ? imageErrors[0] : (payload.message || 'آپلود تصویر انجام نشد. دوباره تلاش کنید.');
+                        } else {
+                            slide.error = payload?.message || 'آپلود تصویر انجام نشد. دوباره تلاش کنید.';
+                        }
                         return;
                     }
 
@@ -275,6 +315,90 @@
                     .filter((item) => item.image.length > 0);
 
                 return JSON.stringify(normalized);
+            },
+        };
+    }
+
+    function logoSettingEditor(initialPath, uploadUrl, csrfToken, fieldName = 'logo') {
+        return {
+            uploadUrl,
+            csrfToken,
+            fieldName,
+            logoPath: String(initialPath || ''),
+            selectedFile: null,
+            uploading: false,
+            error: '',
+            get previewUrl() {
+                const path = this.logoPath.trim();
+                if (!path) {
+                    return '';
+                }
+
+                if (path.startsWith('http://') || path.startsWith('https://')) {
+                    return path;
+                }
+
+                return path.startsWith('/') ? path : `/${path}`;
+            },
+            setLogoFile(event) {
+                this.selectedFile = event.target.files && event.target.files[0] ? event.target.files[0] : null;
+                this.error = '';
+            },
+            async uploadLogo() {
+                this.error = '';
+
+                if (!this.selectedFile) {
+                    this.error = 'لطفاً ابتدا فایل لوگو را انتخاب کنید.';
+                    return;
+                }
+
+                const allowedMime = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/webp'];
+                const lowerName = String(this.selectedFile.name || '').toLowerCase();
+                const allowedExt = ['.svg', '.png', '.jpg', '.jpeg', '.webp'];
+                const hasAllowedExt = allowedExt.some((ext) => lowerName.endsWith(ext));
+
+                if (!(allowedMime.includes(this.selectedFile.type) || hasAllowedExt)) {
+                    this.error = 'فرمت فایل باید SVG، PNG، JPG یا WEBP باشد.';
+                    return;
+                }
+
+                if (this.selectedFile.size > (2 * 1024 * 1024)) {
+                    this.error = 'حجم لوگو نباید بیشتر از ۲ مگابایت باشد.';
+                    return;
+                }
+
+                this.uploading = true;
+
+                try {
+                    const formData = new FormData();
+                    formData.append(this.fieldName, this.selectedFile);
+
+                    const response = await fetch(this.uploadUrl, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': this.csrfToken,
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    });
+
+                    const isJson = (response.headers.get('content-type') || '').includes('application/json');
+                    const payload = isJson ? await response.json() : null;
+
+                    if (!response.ok || !payload || payload.status !== 'ok') {
+                        this.error = payload?.message || 'آپلود لوگو انجام نشد. دوباره تلاش کنید.';
+                        return;
+                    }
+
+                    this.logoPath = payload.path || payload.url || '';
+                    this.selectedFile = null;
+                } catch (error) {
+                    this.error = 'ارتباط با سرور برقرار نشد. دوباره تلاش کنید.';
+                } finally {
+                    this.uploading = false;
+                }
             },
         };
     }

@@ -12,11 +12,35 @@
 
 @section('content')
 @php
-    $companyName = $hrmSettings['company.name'] ?? config('app.name', 'Brand');
-    $logoSetting = (string) ($hrmSettings['landing.logo_url'] ?? '/assets/brand/yadak-shop-logo.svg');
-    $logoUrl = \Illuminate\Support\Str::startsWith($logoSetting, ['http://', 'https://']) ? $logoSetting : asset(ltrim($logoSetting, '/'));
+    $companyName = $companyName ?? ($hrmSettings['company.name'] ?? config('app.name', 'Brand'));
+    $logoUrl = $logoUrl ?? app(\App\Services\HRM\HrmSettingService::class)->landingLogoUrl('landing.logo_url', '/assets/brand/yadak-shop-logo.svg');
     $employmentLabel = $employmentTypes[$jobPosition->employment_type] ?? $jobPosition->employment_type;
     $workModeLabel = $workModes[$jobPosition->work_mode] ?? $jobPosition->work_mode;
+    $locationLabel = trim((string) ($jobPosition->location ?: 'تهران'));
+    $departmentLabel = $jobPosition->department?->name;
+    $companyIntro = $cultureContent ?? app(\App\Services\HRM\HrmSettingService::class)->landingText(
+        'landing.culture_content',
+        'در {company} شفافیت، مسئولیت‌پذیری و کار تیمی پایه‌های اصلی همکاری هستند.',
+        $companyName
+    );
+
+    $salaryLabel = null;
+    if ($jobPosition->is_salary_visible_public && $jobPosition->salary_min) {
+        $currency = $jobPosition->salary_currency ?: 'تومان';
+        if ($jobPosition->salary_max && $jobPosition->salary_max > $jobPosition->salary_min) {
+            $salaryLabel = 'از ' . number_format($jobPosition->salary_min) . ' تا ' . number_format($jobPosition->salary_max) . ' ' . $currency;
+        } else {
+            $salaryLabel = 'از ' . number_format($jobPosition->salary_min) . ' ' . $currency;
+        }
+    }
+
+    $jobBodyParts = array_values(array_filter([
+        filled(trim(strip_tags((string) $jobPosition->description))) ? $jobPosition->description : null,
+        filled(trim(strip_tags((string) $jobPosition->requirements))) ? $jobPosition->requirements : null,
+    ]));
+
+    $shareUrl = route('careers.jobs.show', $jobPosition);
+    $shareTitle = $jobPosition->title . ' | ' . $companyName;
 
     $jobSchema = [
         '@context' => 'https://schema.org',
@@ -42,147 +66,168 @@
             'address' => [
                 '@type' => 'PostalAddress',
                 'addressCountry' => 'IR',
-                'addressLocality' => 'Tehran',
+                'addressLocality' => $locationLabel,
             ],
         ],
-        'url' => route('careers.jobs.show', $jobPosition),
+        'url' => $shareUrl,
     ];
 @endphp
 
-<div x-data="careersPage({ hasAnyJobs: false })" x-init="init()" class="ys-page">
+<div x-data="careersPage({ hasAnyJobs: false, logoUrl: @js($logoUrl), logoUrlDark: @js($logoUrlDark ?? '') })" x-init="init()" class="ys-page">
     @include('careers.partials.header')
 
-    <section class="ys-section">
-        <div class="ys-container space-y-6">
-            <div class="rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:p-9">
-                <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                        <a href="{{ route('careers.index') }}#jobs" class="inline-flex items-center gap-1 text-xs font-bold text-blue-900 dark:text-blue-300">
-                            <span>بازگشت به لیست فرصت‌ها</span>
-                            <span aria-hidden="true">←</span>
-                        </a>
-                        <h1 class="mt-3 text-3xl font-black leading-tight text-slate-900 dark:text-slate-100 lg:text-4xl">{{ $jobPosition->title }}</h1>
-                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ $jobPosition->department?->name ?? 'بدون دپارتمان' }} • تهران</p>
-                    </div>
-                    <img src="{{ $logoUrl }}" alt="{{ $companyName }}" class="h-12 w-auto" loading="lazy">
-                </div>
+    <section class="ys-section ys-section--job-show">
+        <div class="ys-container ys-job-view">
+            <div class="ys-job-view__layout">
+                <div class="ys-job-view__main">
+                    <article class="ys-job-view__box">
+                        <div class="ys-job-view__head">
+                            <a href="{{ route('careers.index') }}#jobs" class="ys-job-view__back">
+                                <span aria-hidden="true">←</span>
+                                <span>بازگشت به لیست فرصت‌ها</span>
+                            </a>
+                            <h1 class="ys-job-view__title">{{ $jobPosition->title }}</h1>
+                        </div>
 
-                <div class="mt-5 flex flex-wrap gap-2 text-xs font-bold">
-                    <span class="rounded-full bg-red-100 px-3 py-1 text-red-700 dark:bg-red-900/35 dark:text-red-200">{{ $employmentLabel }}</span>
-                    <span class="rounded-full bg-blue-100 px-3 py-1 text-blue-800 dark:bg-blue-900/35 dark:text-blue-200">{{ $workModeLabel }}</span>
-                    @if($jobPosition->is_salary_visible_public && $jobPosition->salary_min && $jobPosition->salary_max)
-                        <span class="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700 dark:bg-emerald-900/35 dark:text-emerald-200">{{ number_format($jobPosition->salary_min) }} تا {{ number_format($jobPosition->salary_max) }} {{ $jobPosition->salary_currency }}</span>
+                        <ul class="ys-job-view__info">
+                            @if($departmentLabel)
+                                <li class="ys-job-view__info-item">
+                                    <h4 class="ys-job-view__info-label">دسته‌بندی شغلی</h4>
+                                    <div class="ys-job-view__tags">
+                                        <span class="ys-job-view__tag">{{ $departmentLabel }}</span>
+                                    </div>
+                                </li>
+                            @endif
+                            <li class="ys-job-view__info-item">
+                                <h4 class="ys-job-view__info-label">موقعیت مکانی</h4>
+                                <div class="ys-job-view__tags">
+                                    <span class="ys-job-view__tag">{{ $locationLabel }}</span>
+                                </div>
+                            </li>
+                            <li class="ys-job-view__info-item">
+                                <h4 class="ys-job-view__info-label">نوع همکاری</h4>
+                                <div class="ys-job-view__tags">
+                                    <span class="ys-job-view__tag">{{ $employmentLabel }}</span>
+                                </div>
+                            </li>
+                            <li class="ys-job-view__info-item">
+                                <h4 class="ys-job-view__info-label">مدل کار</h4>
+                                <div class="ys-job-view__tags">
+                                    <span class="ys-job-view__tag">{{ $workModeLabel }}</span>
+                                </div>
+                            </li>
+                            @if($salaryLabel)
+                                <li class="ys-job-view__info-item">
+                                    <h4 class="ys-job-view__info-label">حقوق</h4>
+                                    <div class="ys-job-view__tags">
+                                        <span class="ys-job-view__tag ys-job-view__tag--salary">{{ $salaryLabel }}</span>
+                                    </div>
+                                </li>
+                            @endif
+                        </ul>
+
+                        <h4 class="ys-job-view__section-title">شرح موقعیت شغلی</h4>
+                        @if($jobBodyParts !== [])
+                            <div class="ys-job-view__body ys-rich-content">
+                                @foreach($jobBodyParts as $part)
+                                    {!! $part !!}
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="ys-job-view__empty">توضیحی برای این موقعیت ثبت نشده است.</p>
+                        @endif
+
+                        <h4 class="ys-job-view__section-title">معرفی شرکت</h4>
+                        <div class="ys-job-view__body ys-job-view__company">
+                            {!! nl2br(e($companyIntro)) !!}
+                        </div>
+
+                        @if($jobPosition->requiredSkills->isNotEmpty())
+                            <ul class="ys-job-view__info ys-job-view__info--bottom">
+                                <li class="ys-job-view__info-item ys-job-view__info-item--wide">
+                                    <h4 class="ys-job-view__info-label">مهارت‌های مورد نیاز</h4>
+                                    <div class="ys-job-view__tags">
+                                        @foreach($jobPosition->requiredSkills as $skill)
+                                            <span class="ys-job-view__tag">{{ $skill->name }}</span>
+                                        @endforeach
+                                    </div>
+                                </li>
+                            </ul>
+                        @endif
+                    </article>
+
+                    @if($similarJobs->isNotEmpty())
+                        <section class="ys-job-view__similar" id="similar-jobs">
+                            <div class="ys-job-view__similar-head">
+                                <h3 class="ys-job-view__similar-title">مشاغل مشابه</h3>
+                                <a href="{{ route('careers.index') }}#jobs" class="ys-job-view__similar-link">مشاهده همه فرصت‌ها</a>
+                            </div>
+                            <div class="ys-job-view__similar-box">
+                                <ul class="ys-job-view__similar-list">
+                                    @foreach($similarJobs as $similarJob)
+                                        @php
+                                            $similarEmployment = $employmentTypes[$similarJob->employment_type] ?? $similarJob->employment_type;
+                                            $similarWorkMode = $workModes[$similarJob->work_mode] ?? $similarJob->work_mode;
+                                            $similarSalary = null;
+                                            if ($similarJob->is_salary_visible_public && $similarJob->salary_min) {
+                                                $similarSalary = $similarJob->salary_max && $similarJob->salary_max > $similarJob->salary_min
+                                                    ? 'از ' . number_format($similarJob->salary_min) . ' تا ' . number_format($similarJob->salary_max) . ' ' . ($similarJob->salary_currency ?: 'تومان')
+                                                    : 'از ' . number_format($similarJob->salary_min) . ' ' . ($similarJob->salary_currency ?: 'تومان');
+                                            }
+                                            $postedAt = $similarJob->opened_at ?? $similarJob->created_at;
+                                        @endphp
+                                        <li class="ys-job-view__similar-item">
+                                            <div class="ys-job-view__similar-content">
+                                                <h4 class="ys-job-view__similar-job-title">
+                                                    <a href="{{ route('careers.jobs.show', $similarJob) }}">{{ $similarJob->title }}</a>
+                                                </h4>
+                                                @if($postedAt)
+                                                    <span class="ys-job-view__similar-date">{{ $postedAt->locale('fa')->diffForHumans() }}</span>
+                                                @endif
+                                                <ul class="ys-job-view__similar-meta">
+                                                    <li>{{ $companyName }}</li>
+                                                    <li>{{ $similarJob->location ?: 'تهران' }}</li>
+                                                    <li>{{ $similarEmployment }} • {{ $similarWorkMode }}@if($similarSalary) ({{ $similarSalary }})@endif</li>
+                                                </ul>
+                                            </div>
+                                            <a href="{{ route('careers.jobs.show', $similarJob) }}" class="ys-job-view__similar-action">مشاهده</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </section>
                     @endif
                 </div>
 
-                <div class="mt-8 grid gap-6 lg:grid-cols-3">
-                    <div class="rounded-2xl border border-slate-200 p-5 dark:border-slate-800 lg:col-span-2">
-                        <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">شرح موقعیت</h2>
-                        @if(!empty($jobPosition->description))
-                            <div class="mt-3 ys-rich-content text-sm leading-7 text-slate-700 dark:text-slate-300">{!! $jobPosition->description !!}</div>
-                        @else
-                            <p class="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">توضیحی برای این موقعیت ثبت نشده است.</p>
-                        @endif
-                    </div>
-                    <div class="rounded-2xl border border-slate-200 p-5 dark:border-slate-800">
-                        <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">نیازمندی‌ها</h2>
-                        @if(!empty($jobPosition->requirements))
-                            <div class="mt-3 ys-rich-content text-sm leading-7 text-slate-700 dark:text-slate-300">{!! $jobPosition->requirements !!}</div>
-                        @else
-                            <p class="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">نیازمندی خاصی ثبت نشده است.</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
+                <aside class="ys-job-view__sidebar" x-data="{ shareOpen: false, copied: false }">
+                    @include('careers.partials.job-apply-form')
 
-            <div id="general-apply" class="ys-general-apply">
-                <div>
-                    <span class="ys-kicker">درخواست برای این موقعیت</span>
-                    <h2>ارسال رزومه برای {{ $jobPosition->title }}</h2>
-                    <p>فرم زیر را کامل کنید تا تیم منابع انسانی پس از بررسی با شما در ارتباط باشد.</p>
-                    <figure class="ys-general-apply__visual mt-4">
-                        <img src="{{ asset('assets/illustrations/resume-journey.svg') }}" alt="فرآیند حرفه‌ای بررسی رزومه" loading="lazy">
-                    </figure>
-                </div>
-
-                <form class="ys-form" method="post" enctype="multipart/form-data" action="{{ route('careers.jobs.apply', $jobPosition) }}" novalidate @submit="handleGeneralSubmit($event)">
-                    @csrf
-                    <div class="ys-form-feedback ys-form-feedback--success" x-show="submitState === 'success'" x-cloak>
-                        <p x-text="submitMessage"></p>
-                    </div>
-                    <div class="ys-form-feedback ys-form-feedback--error" x-show="submitState === 'error'" x-cloak>
-                        <p x-text="submitMessage"></p>
-                        <ul x-show="submitErrors.length" class="ys-form-feedback__list">
-                            <template x-for="(item, idx) in submitErrors" :key="idx">
-                                <li x-text="item"></li>
-                            </template>
-                        </ul>
-                    </div>
-                    <div class="ys-form-grid">
-                        <label>
-                            <span>نام و نام خانوادگی *</span>
-                            <input name="full_name" value="{{ old('full_name') }}" required>
-                            @error('full_name')<em>{{ $message }}</em>@enderror
-                        </label>
-                        <label>
-                            <span>موبایل *</span>
-                            <input name="mobile" value="{{ old('mobile') }}" required>
-                            @error('mobile')<em>{{ $message }}</em>@enderror
-                        </label>
-                        <label>
-                            <span>ایمیل</span>
-                            <input name="email" type="email" value="{{ old('email') }}">
-                            @error('email')<em>{{ $message }}</em>@enderror
-                        </label>
-                        <label>
-                            <span>حقوق مورد انتظار (اختیاری)</span>
-                            <input name="expected_salary" type="number" min="0" value="{{ old('expected_salary') }}" placeholder="مثال: 35000000">
-                            @error('expected_salary')<em>{{ $message }}</em>@enderror
-                        </label>
-                        <label class="ys-form-grid__full">
-                            <span>توضیح کوتاه</span>
-                            <textarea name="cover_letter" rows="4">{{ old('cover_letter') }}</textarea>
-                            @error('cover_letter')<em>{{ $message }}</em>@enderror
-                        </label>
-                        <label class="ys-form-grid__full ys-upload">
-                            <span>فایل رزومه (فقط PDF) *</span>
-                            <input id="resume" type="file" name="resume" accept=".pdf,application/pdf" required @change="setResumeFileName($event)">
-                            <div class="ys-upload__box">
-                                <strong x-text="resumeFileName || 'فایل رزومه را به‌صورت PDF انتخاب کنید'"></strong>
-                            </div>
-                            <em x-show="resumeClientError" x-text="resumeClientError" x-cloak></em>
-                            @error('resume')<em>{{ $message }}</em>@enderror
-                        </label>
-
-                        @foreach($jobPosition->questions as $question)
-                            <label class="ys-form-grid__full">
-                                <span>{{ $question->question }}</span>
-                                <input name="answers[{{ $question->id }}]" value="{{ old('answers.' . $question->id) }}">
-                            </label>
-                        @endforeach
-
-                        <div class="ys-form-grid__full ys-captcha">
-                            <span>کد امنیتی *</span>
-                            <div class="ys-captcha__row">
-                                <img :src="captchaSrc" alt="کد امنیتی" class="ys-captcha__image">
-                                <input name="captcha" inputmode="numeric" pattern="[0-9۰-۹٠-٩]{5}" maxlength="5" placeholder="کد ۵ رقمی" required>
-                                <button type="button" class="ys-captcha__refresh" @click.stop="refreshCaptcha()" aria-label="بارگذاری مجدد کد امنیتی" title="بارگذاری مجدد کد امنیتی">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                        <path d="M20.33 8.67A8 8 0 1 0 20 13h-2.5" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
-                                        <path d="M20 5v6h-6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <small>کد عددی داخل تصویر را وارد کنید.</small>
-                            @error('captcha')<em>{{ $message }}</em>@enderror
+                    <div class="ys-job-view__share">
+                        <button type="button" class="ys-job-view__share-toggle" @click="shareOpen = !shareOpen">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                                <path d="M8.59 13.51 15.42 17.49M15.41 6.51 8.59 10.49M21 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm12 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
+                            </svg>
+                            اشتراک‌گذاری فرصت شغلی
+                        </button>
+                        <div class="ys-job-view__share-panel" x-show="shareOpen" x-cloak>
+                            <ul class="ys-job-view__share-links">
+                                <li>
+                                    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url={{ urlencode($shareUrl) }}&amp;title={{ urlencode($shareTitle) }}" target="_blank" rel="nofollow noopener" aria-label="اشتراک در لینکدین">LinkedIn</a>
+                                </li>
+                                <li>
+                                    <a href="https://t.me/share/url?url={{ urlencode($shareUrl) }}&amp;text={{ urlencode($shareTitle) }}" target="_blank" rel="nofollow noopener" aria-label="اشتراک در تلگرام">Telegram</a>
+                                </li>
+                                <li>
+                                    <a href="https://twitter.com/intent/tweet?url={{ urlencode($shareUrl) }}&amp;text={{ urlencode($shareTitle) }}" target="_blank" rel="nofollow noopener" aria-label="اشتراک در ایکس">X</a>
+                                </li>
+                            </ul>
+                            <button type="button" class="ys-job-view__share-copy" @click="navigator.clipboard.writeText(@js($shareUrl)); copied = true; setTimeout(() => copied = false, 2000)">
+                                <span x-show="!copied">{{ $shareUrl }}</span>
+                                <span x-show="copied" x-cloak>لینک کپی شد</span>
+                            </button>
                         </div>
                     </div>
-
-                    <button class="ys-btn ys-btn--primary ys-form__submit" :disabled="submitting" :class="submitting ? 'is-loading' : ''">
-                        <span x-show="!submitting">ثبت درخواست</span>
-                        <span x-show="submitting">در حال ارسال...</span>
-                    </button>
-                </form>
+                </aside>
             </div>
         </div>
     </section>

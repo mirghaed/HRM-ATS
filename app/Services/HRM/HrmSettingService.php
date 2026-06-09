@@ -4,6 +4,7 @@ namespace App\Services\HRM;
 
 use App\Models\HrmSetting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class HrmSettingService
 {
@@ -14,6 +15,26 @@ class HrmSettingService
         $settings = $this->all();
 
         return $settings[$key] ?? $default;
+    }
+
+    public function landingText(string $key, string $default, ?string $companyName = null): string
+    {
+        $companyName ??= (string) $this->get('company.name', config('app.name', 'Brand'));
+        $template = (string) $this->get($key, $default);
+
+        return str_replace('{company}', $companyName, $template);
+    }
+
+    public function landingLogoUrl(string $key, string $default = ''): string
+    {
+        $setting = trim((string) $this->get($key, $default));
+        if ($setting === '') {
+            return '';
+        }
+
+        return Str::startsWith($setting, ['http://', 'https://'])
+            ? $setting
+            : asset(ltrim($setting, '/'));
     }
 
     public function set(string $key, mixed $value, string $group = 'general', string $type = 'string', bool $isPublic = false): HrmSetting

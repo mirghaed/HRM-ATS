@@ -64,12 +64,56 @@ class CareerController extends Controller
         ]);
     }
 
+    public function jobs()
+    {
+        $departments = Department::query()
+            ->where('is_active', true)
+            ->withCount([
+                'jobPositions as open_positions_count' => fn ($query) => $query->where('status', 'published'),
+            ])
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        $jobPositions = JobPosition::query()
+            ->with('department:id,name,slug')
+            ->where('status', 'published')
+            ->orderByDesc('priority')
+            ->orderByDesc('opened_at')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('careers.jobs.index', [
+            'departments' => $departments,
+            'jobPositions' => $jobPositions,
+            'employmentTypes' => $this->employmentTypeLabels(),
+            'workModes' => $this->workModeLabels(),
+        ]);
+    }
+
     public function show(JobPosition $jobPosition)
     {
         abort_if($jobPosition->status !== 'published', 404);
 
+        $jobPosition->load('department', 'questions', 'requiredSkills');
+
+        $similarJobs = JobPosition::query()
+            ->with('department:id,name,slug')
+            ->where('status', 'published')
+            ->whereKeyNot($jobPosition->id)
+            ->when(
+                $jobPosition->department_id,
+                fn ($query) => $query->where('department_id', $jobPosition->department_id)
+            )
+            ->orderByDesc('priority')
+            ->orderByDesc('opened_at')
+            ->orderByDesc('id')
+            ->limit(6)
+            ->get();
+
         return view('careers.show', [
-            'jobPosition' => $jobPosition->load('department', 'questions'),
+            'jobPosition' => $jobPosition,
+            'similarJobs' => $similarJobs,
             'employmentTypes' => $this->employmentTypeLabels(),
             'workModes' => $this->workModeLabels(),
         ]);
@@ -102,11 +146,11 @@ class CareerController extends Controller
             return response()->json([
                 'status' => 'ok',
                 'message' => 'رزومه شما با موفقیت ثبت شد.',
-                'tracking_code' => (string) $application->id,
+                'tracking_code' => $application->tracking_code,
             ], 201);
         }
 
-        return redirect()->route('careers.jobs.show', $jobPosition)->with('success', 'رزومه شما با موفقیت ثبت شد. کد رهگیری: '.$application->id);
+        return redirect()->route('careers.jobs.show', $jobPosition)->with('success', 'رزومه شما با موفقیت ثبت شد. کد رهگیری: '.$application->tracking_code);
     }
 
     public function generalApply(GeneralApplicationRequest $request, ApplicationCreator $creator, NumericCaptchaService $captchaService)
@@ -145,11 +189,11 @@ class CareerController extends Controller
             return response()->json([
                 'status' => 'ok',
                 'message' => 'رزومه عمومی شما با موفقیت ثبت شد.',
-                'tracking_code' => (string) $application->id,
+                'tracking_code' => $application->tracking_code,
             ], 201);
         }
 
-        return redirect()->route('careers.index')->with('success', 'رزومه عمومی شما ثبت شد. کد رهگیری: '.$application->id);
+        return redirect()->route('careers.index')->with('success', 'رزومه عمومی شما ثبت شد. کد رهگیری: '.$application->tracking_code);
     }
 
     private function employmentTypeLabels(): array

@@ -1,38 +1,7 @@
-@font-face {
-    font-family: "PeydaWebFaNum";
-    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Regular.woff2") format("woff2"),
-        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Regular.woff") format("woff");
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "PeydaWebFaNum";
-    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Medium.woff2") format("woff2"),
-        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Medium.woff") format("woff");
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "PeydaWebFaNum";
-    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Bold.woff2") format("woff2"),
-        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Bold.woff") format("woff");
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "PeydaWebFaNum";
-    src: url("/assets/fonts/peyda/woff2/PeydaWebFaNum-Black.woff2") format("woff2"),
-        url("/assets/fonts/peyda/woff/PeydaWebFaNum-Black.woff") format("woff");
-    font-style: normal;
-    font-weight: 900;
-    font-display: swap;
-}
+@import "@fontsource/vazirmatn/400.css";
+@import "@fontsource/vazirmatn/500.css";
+@import "@fontsource/vazirmatn/700.css";
+@import "@fontsource/vazirmatn/900.css";
 
 @tailwind base;
 @tailwind components;
@@ -55,7 +24,7 @@
 
 html,
 body {
-    font-family: "PeydaWebFaNum", sans-serif;
+    font-family: "Vazirmatn", sans-serif;
 }
 
 body {
@@ -218,11 +187,11 @@ body {
 }
 
 .ys-drawer-backdrop {
-    @apply fixed inset-0 z-[58] bg-slate-950/50;
+    @apply fixed inset-0 z-[80] bg-slate-950/50;
 }
 
 .ys-drawer {
-    @apply fixed bottom-0 right-0 top-0 z-[59] w-[290px] border-l border-slate-200 bg-white p-4 shadow-2xl;
+    @apply fixed bottom-0 end-0 top-0 z-[81] flex w-[min(84vw,320px)] max-w-full flex-col border-s border-slate-200 bg-white p-4 shadow-2xl;
 }
 
 .dark .ys-drawer {
@@ -230,15 +199,19 @@ body {
 }
 
 .ys-drawer__head {
-    @apply mb-5 flex items-center justify-between;
+    @apply mb-5 flex shrink-0 items-center justify-between gap-3;
+}
+
+.ys-drawer__close svg {
+    @apply h-5 w-5;
 }
 
 .ys-drawer__nav {
-    @apply grid gap-2;
+    @apply grid gap-0.5;
 }
 
 .ys-drawer__nav a {
-    @apply rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100;
+    @apply block rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100;
 }
 
 .dark .ys-drawer__nav a {
@@ -246,7 +219,15 @@ body {
 }
 
 .ys-drawer__actions {
-    @apply mt-5 grid gap-2;
+    @apply mt-4 grid shrink-0 gap-2 border-t border-slate-200 pt-4;
+}
+
+.dark .ys-drawer__actions {
+    @apply border-slate-800;
+}
+
+.ys-drawer__actions .ys-btn {
+    @apply w-full;
 }
 
 .ys-hero {
@@ -274,7 +255,8 @@ body {
 }
 
 .ys-hero__content h1 {
-    @apply mt-4 text-3xl font-black leading-snug text-white lg:text-5xl;
+    @apply mt-4 text-3xl font-black text-white lg:text-5xl;
+    line-height: 1.7;
 }
 
 .ys-hero__content p {
@@ -290,7 +272,15 @@ body {
 }
 
 .ys-hero__visual--illustrated {
-    @apply flex min-h-[460px] items-center justify-center;
+    @apply relative flex min-h-[460px] items-center justify-center;
+}
+
+.ys-hero-floating-cards {
+    @apply pointer-events-none absolute inset-0;
+}
+
+.ys-hero-floating-cards .ys-hero-floating-card {
+    @apply pointer-events-auto;
 }
 
 .ys-hero-illustration {
@@ -554,6 +544,54 @@ body {
 
 .ys-job-grid {
     @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+}
+
+.ys-jobs-more {
+    @apply mt-8 flex justify-center;
+}
+
+.ys-jobs-more .ys-btn {
+    @apply min-w-[240px];
+}
+
+.ys-section--jobs-page {
+    @apply pb-0 pt-8;
+}
+
+.ys-jobs-page__breadcrumb {
+    @apply mb-3 flex flex-wrap items-center gap-2 text-sm font-bold text-slate-500;
+}
+
+.ys-jobs-page__breadcrumb a {
+    @apply text-blue-900 transition hover:text-blue-700;
+}
+
+.dark .ys-jobs-page__breadcrumb {
+    @apply text-slate-400;
+}
+
+.dark .ys-jobs-page__breadcrumb a {
+    @apply text-slate-200 hover:text-white;
+}
+
+.ys-jobs-page__title {
+    @apply text-2xl font-black text-slate-900 lg:text-3xl;
+}
+
+.dark .ys-jobs-page__title {
+    @apply text-slate-100;
+}
+
+.ys-jobs-page__subtitle {
+    @apply mt-2 text-sm text-slate-600;
+}
+
+.dark .ys-jobs-page__subtitle {
+    @apply text-slate-400;
+}
+
+.ys-section--jobs-page + .ys-section--jobs {
+    @apply pt-6;
 }
 
 .ys-job-card {
@@ -1245,14 +1283,49 @@ body {
     cursor: text;
 }
 
+.ys-rich-content {
+    @apply text-sm leading-7 text-slate-700;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.ys-rich-content :where(p, li, span, div, h1, h2, h3, h4, h5, h6, strong, em, blockquote, a, pre, code) {
+    background-color: transparent !important;
+    font-family: inherit !important;
+}
+
+.ys-rich-content :where(p, li, span, div, h1, h2, h3, h4, h5, h6, strong, em, blockquote) {
+    color: inherit !important;
+}
+
+.ys-rich-content > * + * {
+    margin-top: 0.75rem;
+}
+
 .ys-rich-content p + p {
     margin-top: 0.75rem;
+}
+
+.ys-rich-content h1 {
+    @apply text-2xl font-black leading-8 text-slate-900;
+}
+
+.ys-rich-content h2 {
+    @apply text-xl font-black leading-8 text-slate-900;
+}
+
+.ys-rich-content h3 {
+    @apply text-lg font-bold leading-7 text-slate-900;
+}
+
+.ys-rich-content h4 {
+    @apply text-base font-bold leading-7 text-slate-800;
 }
 
 .ys-rich-content ul,
 .ys-rich-content ol {
     margin-top: 0.75rem;
-    margin-right: 1.1rem;
+    padding-right: 1.25rem;
 }
 
 .ys-rich-content ul {
@@ -1261,6 +1334,514 @@ body {
 
 .ys-rich-content ol {
     list-style: decimal;
+}
+
+.ys-rich-content li + li {
+    margin-top: 0.35rem;
+}
+
+.ys-rich-content li > ul,
+.ys-rich-content li > ol {
+    margin-top: 0.35rem;
+}
+
+.ys-rich-content a {
+    @apply font-semibold text-blue-900 underline decoration-blue-300 underline-offset-2;
+}
+
+.ys-rich-content blockquote {
+    @apply border-r-4 border-slate-300 pr-4 text-slate-600 italic;
+}
+
+.ys-rich-content pre {
+    @apply overflow-x-auto rounded-xl bg-slate-100 p-3 text-xs leading-6 text-slate-800;
+}
+
+.ys-rich-content code {
+    @apply rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800;
+}
+
+.ys-rich-content img {
+    @apply h-auto max-w-full rounded-xl;
+}
+
+.ys-rich-content hr {
+    @apply my-4 border-slate-200;
+}
+
+.dark .ys-rich-content {
+    @apply text-slate-300;
+}
+
+.dark .ys-rich-content h1,
+.dark .ys-rich-content h2,
+.dark .ys-rich-content h3,
+.dark .ys-rich-content h4 {
+    @apply text-slate-100;
+}
+
+.dark .ys-rich-content a {
+    color: #93c5fd !important;
+}
+
+.dark .ys-rich-content blockquote {
+    @apply border-slate-600 text-slate-400;
+}
+
+.dark .ys-rich-content pre,
+.dark .ys-rich-content code {
+    @apply bg-slate-800 text-slate-200;
+}
+
+.dark .ys-rich-content hr {
+    @apply border-slate-700;
+}
+
+.ys-section--job-show {
+    @apply bg-slate-100/90 py-8 lg:py-10;
+}
+
+.dark .ys-section--job-show {
+    @apply bg-slate-950;
+}
+
+.ys-job-view {
+    @apply max-w-6xl;
+}
+
+.ys-job-view__layout {
+    @apply grid gap-6 lg:grid-cols-12 lg:items-start;
+}
+
+.ys-job-view__main {
+    @apply space-y-6 lg:col-span-8;
+}
+
+.ys-job-view__sidebar {
+    @apply space-y-4 lg:col-span-4 lg:sticky lg:top-24 lg:self-start;
+}
+
+.ys-job-view__box {
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.dark .ys-job-view__box {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-job-view__head {
+    @apply border-b border-slate-100 px-5 py-5 lg:px-7 lg:py-6;
+}
+
+.dark .ys-job-view__head {
+    @apply border-slate-800;
+}
+
+.ys-job-view__back {
+    @apply inline-flex items-center gap-1 text-xs font-bold text-slate-500 transition hover:text-blue-800;
+}
+
+.dark .ys-job-view__back {
+    @apply text-slate-400 hover:text-blue-300;
+}
+
+.ys-job-view__title {
+    @apply mt-3 text-2xl font-black leading-snug text-slate-900 lg:text-[1.75rem];
+}
+
+.dark .ys-job-view__title {
+    @apply text-slate-100;
+}
+
+.ys-job-view__info {
+    @apply grid gap-4 border-b border-slate-100 px-5 py-5 sm:grid-cols-2 lg:px-7;
+}
+
+.dark .ys-job-view__info {
+    @apply border-slate-800;
+}
+
+.ys-job-view__info--bottom {
+    @apply border-b-0 border-t;
+}
+
+.ys-job-view__info-item {
+    @apply space-y-2;
+}
+
+.ys-job-view__info-item--wide {
+    @apply sm:col-span-2;
+}
+
+.ys-job-view__info-label {
+    @apply text-xs font-bold text-slate-500;
+}
+
+.dark .ys-job-view__info-label {
+    @apply text-slate-400;
+}
+
+.ys-job-view__tags {
+    @apply flex flex-wrap gap-2;
+}
+
+.ys-job-view__tag {
+    @apply inline-flex rounded-md bg-slate-800 px-3 py-1.5 text-xs font-bold text-white;
+}
+
+.dark .ys-job-view__tag {
+    @apply bg-slate-700 text-slate-100;
+}
+
+.ys-job-view__tag--salary {
+    @apply bg-slate-900;
+}
+
+.dark .ys-job-view__tag--salary {
+    @apply bg-slate-600;
+}
+
+.ys-job-view__section-title {
+    @apply px-5 pt-6 text-base font-black text-slate-900 lg:px-7;
+}
+
+.dark .ys-job-view__section-title {
+    @apply text-slate-100;
+}
+
+.ys-job-view__body {
+    @apply px-5 pb-2 pt-3 text-sm leading-8 text-slate-700 lg:px-7;
+}
+
+.dark .ys-job-view__body {
+    @apply text-slate-300;
+}
+
+.ys-job-view__body.ys-rich-content {
+    @apply pb-4;
+}
+
+.ys-job-view__company {
+    @apply pb-6;
+}
+
+.ys-job-view__empty {
+    @apply px-5 pb-6 pt-3 text-sm leading-7 text-slate-600 lg:px-7;
+}
+
+.dark .ys-job-view__empty {
+    @apply text-slate-400;
+}
+
+.ys-job-view__widget {
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.dark .ys-job-view__widget {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-job-view__widget-header {
+    @apply border-b border-slate-100 bg-slate-50 px-5 py-4 text-center text-sm font-black text-slate-800;
+}
+
+.dark .ys-job-view__widget-header {
+    @apply border-slate-800 bg-slate-800/70 text-slate-100;
+}
+
+.ys-job-view__widget-body {
+    @apply p-5;
+}
+
+.ys-job-view__widget-lead {
+    @apply mb-4 text-xs leading-6 text-slate-600;
+}
+
+.dark .ys-job-view__widget-lead {
+    @apply text-slate-400;
+}
+
+.ys-job-view__form-fields {
+    @apply space-y-3;
+}
+
+.ys-job-view__form-full {
+    @apply block;
+}
+
+.ys-job-view__form .ys-form label span {
+    @apply text-[11px];
+}
+
+.ys-job-view__form input,
+.ys-job-view__form textarea {
+    @apply rounded-xl border-slate-200 bg-slate-50 px-3 py-2.5 text-sm;
+}
+
+.dark .ys-job-view__form input,
+.dark .ys-job-view__form textarea {
+    @apply border-slate-700 bg-slate-950;
+}
+
+.ys-ltr-input {
+    direction: ltr;
+    text-align: left;
+}
+
+.ys-job-view__upload-box {
+    @apply py-4;
+}
+
+.ys-job-view__submit {
+    @apply mt-4 flex w-full items-center justify-center rounded-xl bg-teal-500 px-4 py-3 text-sm font-black text-white transition hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-70;
+}
+
+.dark .ys-job-view__submit {
+    @apply bg-teal-600 hover:bg-teal-500;
+}
+
+.ys-job-view__submit.is-loading {
+    @apply opacity-80;
+}
+
+.ys-job-view__share {
+    @apply rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm;
+}
+
+.dark .ys-job-view__share {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-job-view__share-toggle {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-bold text-slate-700 transition hover:text-teal-600;
+}
+
+.dark .ys-job-view__share-toggle {
+    @apply text-slate-200 hover:text-teal-400;
+}
+
+.ys-job-view__share-toggle svg {
+    @apply h-5 w-5;
+}
+
+.ys-job-view__share-panel {
+    @apply mt-4 space-y-3 border-t border-slate-100 pt-4;
+}
+
+.dark .ys-job-view__share-panel {
+    @apply border-slate-800;
+}
+
+.ys-job-view__share-links {
+    @apply flex flex-wrap items-center justify-center gap-2;
+}
+
+.ys-job-view__share-links a {
+    @apply rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-teal-300 hover:text-teal-700;
+}
+
+.dark .ys-job-view__share-links a {
+    @apply border-slate-700 text-slate-200 hover:border-teal-600 hover:text-teal-300;
+}
+
+.ys-job-view__share-copy {
+    @apply w-full break-all rounded-xl bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100;
+}
+
+.dark .ys-job-view__share-copy {
+    @apply bg-slate-800 text-slate-300 hover:bg-slate-700;
+}
+
+.ys-job-view__similar-head {
+    @apply mb-3 flex flex-wrap items-center justify-between gap-2;
+}
+
+.ys-job-view__similar-title {
+    @apply text-lg font-black text-slate-900;
+}
+
+.dark .ys-job-view__similar-title {
+    @apply text-slate-100;
+}
+
+.ys-job-view__similar-link {
+    @apply text-xs font-bold text-teal-700 transition hover:text-teal-900;
+}
+
+.dark .ys-job-view__similar-link {
+    @apply text-teal-400 hover:text-teal-300;
+}
+
+.ys-job-view__similar-box {
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.dark .ys-job-view__similar-box {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-job-view__similar-list {
+    @apply divide-y divide-slate-100;
+}
+
+.dark .ys-job-view__similar-list {
+    @apply divide-slate-800;
+}
+
+.ys-job-view__similar-item {
+    @apply flex items-start justify-between gap-4 px-5 py-4;
+}
+
+.ys-job-view__similar-content {
+    @apply min-w-0 flex-1;
+}
+
+.ys-job-view__similar-job-title {
+    @apply text-sm font-black leading-6 text-slate-900;
+}
+
+.dark .ys-job-view__similar-job-title {
+    @apply text-slate-100;
+}
+
+.ys-job-view__similar-job-title a {
+    @apply transition hover:text-teal-700;
+}
+
+.dark .ys-job-view__similar-job-title a {
+    @apply hover:text-teal-400;
+}
+
+.ys-job-view__similar-date {
+    @apply mt-1 block text-[11px] text-slate-500;
+}
+
+.dark .ys-job-view__similar-date {
+    @apply text-slate-400;
+}
+
+.ys-job-view__similar-meta {
+    @apply mt-2 space-y-1 text-[11px] leading-5 text-slate-600;
+}
+
+.dark .ys-job-view__similar-meta {
+    @apply text-slate-400;
+}
+
+.ys-job-view__similar-action {
+    @apply shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-teal-300 hover:text-teal-700;
+}
+
+.dark .ys-job-view__similar-action {
+    @apply border-slate-700 text-slate-200 hover:border-teal-600 hover:text-teal-300;
+}
+
+.ys-job-show {
+    @apply space-y-6;
+}
+
+.ys-job-show__card {
+    @apply rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm lg:p-9;
+}
+
+.dark .ys-job-show__card {
+    @apply border-slate-800 bg-slate-900;
+}
+
+.ys-job-show__back {
+    @apply inline-flex items-center gap-1 text-xs font-bold text-blue-900;
+}
+
+.dark .ys-job-show__back {
+    @apply text-blue-300;
+}
+
+.ys-job-show__title {
+    @apply mt-3 text-3xl font-black leading-tight text-slate-900 lg:text-4xl;
+}
+
+.dark .ys-job-show__title {
+    @apply text-slate-100;
+}
+
+.ys-job-show__meta {
+    @apply mt-2 text-sm text-slate-600;
+}
+
+.dark .ys-job-show__meta {
+    @apply text-slate-300;
+}
+
+.ys-job-show__badges {
+    @apply mt-5 flex flex-wrap gap-2 text-xs font-bold;
+}
+
+.ys-job-show__badge {
+    @apply rounded-full px-3 py-1;
+}
+
+.ys-job-show__badge--employment {
+    @apply bg-red-100 text-red-700;
+}
+
+.dark .ys-job-show__badge--employment {
+    @apply bg-red-900/35 text-red-200;
+}
+
+.ys-job-show__badge--work-mode {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.dark .ys-job-show__badge--work-mode {
+    @apply bg-blue-900/35 text-blue-200;
+}
+
+.ys-job-show__badge--salary {
+    @apply bg-emerald-100 text-emerald-700;
+}
+
+.dark .ys-job-show__badge--salary {
+    @apply bg-emerald-900/35 text-emerald-200;
+}
+
+.ys-job-show__grid {
+    @apply mt-8 grid gap-6 lg:grid-cols-3;
+}
+
+.ys-job-show__panel {
+    @apply rounded-2xl border border-slate-200 p-5;
+}
+
+.dark .ys-job-show__panel {
+    @apply border-slate-700 bg-slate-900/60;
+}
+
+.ys-job-show__panel--wide {
+    @apply lg:col-span-2;
+}
+
+.ys-job-show__panel h2 {
+    @apply text-lg font-black text-slate-900;
+}
+
+.dark .ys-job-show__panel h2 {
+    @apply text-slate-100;
+}
+
+.ys-job-show__panel .ys-rich-content {
+    @apply mt-3;
+}
+
+.dark .ys-job-show__panel .ys-rich-content {
+    @apply text-slate-300;
+}
+
+.ys-job-show__empty {
+    @apply mt-3 text-sm leading-7 text-slate-700;
+}
+
+.dark .ys-job-show__empty {
+    @apply text-slate-300;
 }
 
 .ys-footer {
@@ -1544,8 +2125,6 @@ body {
 
     .ys-menu-btn {
         display: inline-flex !important;
-        position: relative;
-        z-index: 61;
     }
 
     .ys-icon-btn {
@@ -1557,20 +2136,21 @@ body {
         margin-inline-start: auto;
     }
 
-    .ys-drawer {
-        width: min(84vw, 320px);
-    }
-
     .ys-hero {
         min-height: auto;
     }
 
     .ys-hero__inner {
         grid-template-columns: 1fr;
+        @apply gap-6 py-8;
     }
 
     .ys-hero__visual {
         order: -1;
+    }
+
+    .ys-hero__content h1 {
+        @apply text-2xl;
     }
 
     .ys-filters {
@@ -1596,24 +2176,48 @@ body {
         @apply w-full;
     }
 
+    .ys-hero__inner {
+        @apply gap-5 py-6;
+    }
+
     .ys-hero__visual--illustrated {
-        @apply min-h-0;
-        margin-top: 8px;
+        @apply mx-auto w-full max-w-[420px] min-h-0;
+    }
+
+    .ys-hero-illustration {
+        width: 100%;
+        margin-inline: auto;
+        border-radius: 20px;
     }
 
     .ys-hero-floating-card {
-        position: static;
-        margin-top: 10px;
-        width: 100%;
+        min-width: 0;
+        max-width: 46%;
+        @apply px-2.5 py-2;
+    }
+
+    .ys-hero-floating-card > span,
+    .ys-hero-floating-card small {
+        @apply text-[10px] leading-5;
+    }
+
+    .ys-hero-floating-card strong {
+        @apply text-sm leading-6;
+    }
+
+    .ys-hero-floating-card--top {
+        top: 10px;
+        inset-inline-start: 8px;
+    }
+
+    .ys-hero-floating-card--bottom {
+        bottom: 10px;
+        inset-inline-end: 8px;
     }
 
     .ys-general-apply,
     .ys-process-layout {
         @apply grid-cols-1;
-    }
-
-    .ys-hero-illustration {
-        max-height: 280px;
     }
 
     .ys-section-illustration {
@@ -1624,4 +2228,100 @@ body {
     .ys-growth-grid--timeline .ys-growth-card::before {
         display: none;
     }
+}
+
+.ys-resume-viewer {
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white;
+}
+
+.ys-resume-viewer__head {
+    @apply flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4;
+}
+
+.ys-resume-viewer__title {
+    @apply text-base font-bold text-slate-800;
+}
+
+.ys-resume-viewer__filename {
+    @apply mt-1 text-xs text-slate-500;
+}
+
+.ys-resume-viewer__download {
+    @apply inline-flex items-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100;
+}
+
+.ys-resume-viewer__frame {
+    @apply block w-full border-0 bg-white;
+    min-height: 800px;
+    height: 80vh;
+}
+
+.ys-resume-viewer--modal .ys-resume-viewer__frame {
+    min-height: 600px;
+    height: calc(100vh - 220px);
+}
+
+.ys-resume-viewer--fallback,
+.ys-resume-viewer--empty {
+    @apply rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600;
+}
+
+.ys-application-contact__item {
+    @apply flex flex-col gap-1 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2;
+}
+
+.ys-application-contact__item span {
+    @apply text-xs text-slate-500;
+}
+
+.ys-application-modal {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4;
+}
+
+.ys-application-modal__dialog {
+    @apply max-h-[95vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-2xl;
+}
+
+.ys-application-modal__layout {
+    @apply grid max-h-[95vh] lg:grid-cols-[minmax(0,1fr)_260px];
+}
+
+.ys-application-modal__main {
+    @apply overflow-y-auto p-5;
+}
+
+.ys-application-modal__head {
+    @apply flex items-start justify-between gap-3 border-b border-slate-200 pb-4;
+}
+
+.ys-application-modal__close {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-full text-2xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-800;
+}
+
+.ys-application-modal__meta {
+    @apply mt-4 flex flex-wrap gap-2;
+}
+
+.ys-application-modal__sidebar {
+    @apply border-t border-slate-200 bg-slate-50 p-5 lg:border-r-0 lg:border-t-0 lg:border-l;
+}
+
+.ys-application-modal__sidebar-block h4 {
+    @apply text-sm font-bold text-slate-800;
+}
+
+.ys-application-modal__sidebar-block dl {
+    @apply mt-3 space-y-2 text-sm;
+}
+
+.ys-application-modal__sidebar-block dt {
+    @apply text-slate-500;
+}
+
+.ys-application-modal__sidebar-block dd {
+    @apply font-semibold text-slate-800;
+}
+
+.ys-application-modal__detail-link {
+    @apply mt-4 inline-flex rounded-xl bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700;
 }

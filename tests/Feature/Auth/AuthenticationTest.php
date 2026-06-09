@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use App\Services\Captcha\NumericCaptchaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,9 +22,12 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post('/login', [
+        $response = $this->withSession([
+            NumericCaptchaService::SESSION_KEY => '12345',
+        ])->post('/login', [
             'email' => $user->email,
             'password' => 'password',
+            'captcha' => '12345',
         ]);
 
         $this->assertAuthenticated();
@@ -34,9 +38,12 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post('/login', [
+        $this->withSession([
+            NumericCaptchaService::SESSION_KEY => '12345',
+        ])->post('/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
+            'captcha' => '12345',
         ]);
 
         $this->assertGuest();

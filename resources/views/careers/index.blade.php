@@ -21,8 +21,6 @@
 
 @section('content')
 @php
-    $companyName = $hrmSettings['company.name'] ?? config('app.name', 'Brand');
-
     $sectionsByKey = $sections->keyBy('key');
     $heroSection = $sectionsByKey->get('hero');
     $whySection = $sectionsByKey->get('why_yadak') ?? $sectionsByKey->get('benefits');
@@ -30,10 +28,6 @@
     $growthSection = $sectionsByKey->get('growth_path') ?? $sectionsByKey->get('growth');
     $processSection = $sectionsByKey->get('process');
     $faqSection = $sectionsByKey->get('faq');
-
-    $heroBadge = data_get($heroSection, 'payload.badge', 'فرصت‌های شغلی و همکاری در ' . $companyName);
-    $heroTitle = $hrmSettings['landing.hero_title'] ?? data_get($heroSection, 'title', 'با هم مسیر آینده بازار قطعات خودرو را حرفه‌ای‌تر می‌سازیم');
-    $heroSubtitle = $hrmSettings['landing.hero_subtitle'] ?? data_get($heroSection, 'subtitle', 'در ' . $companyName . ' تیم‌های فروش، تکنولوژی، عملیات و پشتیبانی کنار هم کار می‌کنند تا تجربه‌ای سریع‌تر، دقیق‌تر و قابل اعتمادتر برای مشتری ساخته شود.');
 
     $hasReliableStats = ((int) ($stats['open_jobs'] ?? 0)
         + (int) ($stats['active_departments'] ?? 0)
@@ -46,10 +40,6 @@
         ['title' => 'تیم حرفه‌ای', 'text' => 'در کنار تیم‌های متخصص فروش، عملیات و فناوری تجربه چندبعدی کسب می‌کنی.'],
         ['title' => 'یادگیری مستمر', 'text' => 'فرهنگ کاری ما بر یادگیری، همکاری و بهبود مداوم بنا شده است.'],
     ]);
-
-    $cultureTitle = data_get($cultureSection, 'title', 'فرهنگ همکاری در ' . $companyName);
-    $cultureSubtitle = data_get($cultureSection, 'subtitle', 'ترکیب نظم عملیاتی و سرعت اجرای تکنولوژی');
-    $cultureContent = data_get($cultureSection, 'content', 'در ' . $companyName . ' شفافیت، مسئولیت‌پذیری و کار تیمی پایه‌های اصلی همکاری هستند. هر نقش مالک خروجی خود است و با هماهنگی بین تیم‌ها، نتیجه‌ای بهتر برای مشتری ساخته می‌شود.');
 
     $growthItems = data_get($growthSection, 'payload.items', [
         ['step' => '01', 'title' => 'Onboarding هدفمند', 'desc' => 'با مسیر مشخص، سریع با نقش و تیم هم‌راستا می‌شوی.'],
@@ -72,8 +62,7 @@
         ['q' => 'فرمت فایل رزومه باید چگونه باشد؟', 'a' => 'فقط فایل PDF قابل بارگذاری است.'],
     ]);
 
-    $logoSetting = (string) ($hrmSettings['landing.logo_url'] ?? '/assets/brand/yadak-shop-logo.svg');
-    $logoUrl = \Illuminate\Support\Str::startsWith($logoSetting, ['http://', 'https://']) ? $logoSetting : asset(ltrim($logoSetting, '/'));
+    $logoUrl = $logoUrl ?? app(\App\Services\HRM\HrmSettingService::class)->landingLogoUrl('landing.logo_url', '/assets/brand/yadak-shop-logo.svg');
 
     $companySiteUrl = (string) ($hrmSettings['company.website'] ?? config('app.url'));
     $normalizeJobTitle = static function (?string $title): string {
@@ -141,11 +130,11 @@
         ->all();
 @endphp
 
-<div x-data="careersPage({ hasAnyJobs: {{ $jobPositions->isNotEmpty() ? 'true' : 'false' }} })" x-init="init()" class="ys-page">
+<div x-data="careersPage({ hasAnyJobs: {{ $jobPositions->isNotEmpty() ? 'true' : 'false' }}, logoUrl: @js($logoUrl), logoUrlDark: @js($logoUrlDark ?? '') })" x-init="init()" class="ys-page">
     @include('careers.partials.header')
     @include('careers.partials.hero')
     @include('careers.partials.gallery')
-    @include('careers.partials.jobs')
+    @include('careers.partials.jobs', ['jobsPreviewLimit' => 9])
     @include('careers.partials.departments')
     @include('careers.partials.why')
     @include('careers.partials.culture')

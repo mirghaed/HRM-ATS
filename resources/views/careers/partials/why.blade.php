@@ -6,14 +6,14 @@
     <div class="ys-container">
         <div class="ys-section-head">
             <div>
-                <span class="ys-kicker">{{ data_get($whySection, 'subtitle', 'چرا همکاري با ما') }}</span>
-                <h2>{{ data_get($whySection, 'title', 'چرا ' . $companyName . '؟') }}</h2>
+                <span class="ys-kicker">{{ $whyKicker }}</span>
+                <h2>{{ $whyTitle }}</h2>
             </div>
         </div>
         <div class="ys-benefit-grid">
             @foreach($benefitItems as $benefit)
                 @php
-                    $benefitTitle = is_array($benefit) ? data_get($benefit, 'title', 'مزيت همکاري') : 'مزيت همکاري';
+                    $benefitTitle = is_array($benefit) ? data_get($benefit, 'title', 'مزیت همکاری') : 'مزیت همکاری';
                     $benefitText = is_array($benefit) ? data_get($benefit, 'text', '') : $benefit;
                 @endphp
                 <article class="ys-benefit-card">

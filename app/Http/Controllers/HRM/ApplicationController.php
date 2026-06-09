@@ -21,7 +21,14 @@ class ApplicationController extends Controller
     {
         $this->authorize('viewAny', Application::class);
 
-        $query = Application::query()->with(['candidate', 'jobPosition', 'department', 'source', 'currentStatus']);
+        $query = Application::query()->with([
+            'candidate',
+            'jobPosition',
+            'department',
+            'source',
+            'currentStatus',
+            'files' => fn ($fileQuery) => $fileQuery->where('type', 'resume')->latest('id'),
+        ]);
 
         if (auth()->user()?->can('applications.view_all')) {
             // Full visibility.
@@ -137,6 +144,28 @@ class ApplicationController extends Controller
         return redirect()->route('hrm.applications.index')->with('success', 'رزومه حذف شد.');
     }
 
+    public function viewFile(Application $application, CandidateFile $file)
+    {
+        $this->authorize('view', $application);
+
+        abort_unless($file->application_id === $application->id, 404);
+
+        $disk = $file->disk ?: 'private';
+        $absolutePath = Storage::disk($disk)->path($file->path);
+        abort_unless(is_file($absolutePath), 404);
+
+        $filename = $file->original_name ?: basename($file->path);
+        $mimeType = $file->mime_type ?: Storage::disk($disk)->mimeType($file->path) ?: 'application/octet-stream';
+
+        abort_unless($this->isPdfFile($file, $mimeType), 404);
+
+        return response()->file($absolutePath, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="'.addslashes($filename).'"',
+            'X-Frame-Options' => 'SAMEORIGIN',
+        ]);
+    }
+
     public function downloadFile(Application $application, CandidateFile $file)
     {
         $this->authorize('view', $application);
@@ -147,5 +176,16 @@ class ApplicationController extends Controller
         abort_unless(Storage::disk($disk)->exists($file->path), 404);
 
         return Storage::disk($disk)->download($file->path, $file->original_name ?: basename($file->path));
+    }
+
+    private function isPdfFile(CandidateFile $file, string $mimeType): bool
+    {
+        if (str_contains(strtolower($mimeType), 'pdf')) {
+            return true;
+        }
+
+        $name = strtolower((string) ($file->original_name ?: $file->path));
+
+        return str_ends_with($name, '.pdf');
     }
 }

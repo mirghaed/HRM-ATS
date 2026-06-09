@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Services\Captcha\NumericCaptchaService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,10 +28,29 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
+        $captchaService = app(NumericCaptchaService::class);
+
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'captcha' => [
+                'required',
+                function (string $attribute, mixed $value, \Closure $fail) use ($captchaService): void {
+                    if (! $captchaService->validate((string) $value)) {
+                        $fail('کد امنیتی وارد شده صحیح نیست.');
+                    }
+                },
+            ],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $captchaService = app(NumericCaptchaService::class);
+
+        $this->merge([
+            'captcha' => $captchaService->normalize((string) $this->input('captcha')),
+        ]);
     }
 
     /**
@@ -43,6 +63,7 @@ class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited();
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+            app(NumericCaptchaService::class)->forget();
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

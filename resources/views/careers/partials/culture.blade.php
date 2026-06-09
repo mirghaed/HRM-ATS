@@ -1,26 +1,26 @@
 <section id="culture" class="ys-section ys-section--alt">
     <div class="ys-container ys-culture ys-culture--with-visual">
         <div class="ys-culture__content">
-            <span class="ys-kicker">{{ $cultureSubtitle }}</span>
+            <span class="ys-kicker">{{ $cultureKicker }}</span>
             <h2>{{ $cultureTitle }}</h2>
             <p>{{ $cultureContent }}</p>
 
             <div class="ys-culture-cards">
                 <article>
-                    <strong>شفافيت در کار</strong>
-                    <span>وضعيت‌ها، تصميم‌ها و خروجي‌ها براي تيم‌ها روشن و قابل پيگيري است.</span>
+                    <strong>شفافیت در کار</strong>
+                    <span>وضعیت‌ها، تصمیم‌ها و خروجی‌ها برای تیم‌ها روشن و قابل پیگیری است.</span>
                 </article>
                 <article>
-                    <strong>مسئوليت‌پذيري در پاسخ‌گويي</strong>
-                    <span>هر نقش مالک کيفيت خروجي خود است و پاسخ‌گويي جزئي از فرهنگ کاري ماست.</span>
+                    <strong>مسئولیت‌پذیری در پاسخ‌گویی</strong>
+                    <span>هر نقش مالک کیفیت خروجی خود است و پاسخ‌گویی جزئی از فرهنگ کاری ماست.</span>
                 </article>
                 <article>
-                    <strong>يادگيري از خطاها</strong>
-                    <span>با بازخورد مستمر و بهبود فرايندها، تجربه تيمي و کيفيت کار رشد مي‌کند.</span>
+                    <strong>یادگیری از خطاها</strong>
+                    <span>با بازخورد مستمر و بهبود فرایندها، تجربه تیمی و کیفیت کار رشد می‌کند.</span>
                 </article>
                 <article>
-                    <strong>همکاري بين تيم‌ها</strong>
-                    <span>فروش، انبار، پشتيباني و نرم‌افزار براي نتيجه بهتر کنار هم کار مي‌کنند.</span>
+                    <strong>همکاری بین تیم‌ها</strong>
+                    <span>فروش، انبار، پشتیبانی و نرم‌افزار برای نتیجه بهتر کنار هم کار می‌کنند.</span>
                 </article>
             </div>
         </div>

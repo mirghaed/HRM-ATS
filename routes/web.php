@@ -24,24 +24,34 @@ use App\Http\Controllers\HRM\UserManagementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\CaptchaController;
 use App\Http\Controllers\Public\CareerController;
+use App\Http\Controllers\Public\PublicStorageController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/careers');
-Route::redirect('/dashboard', '/hrm/dashboard')->name('dashboard');
-
-Route::get('/careers', [CareerController::class, 'index'])->name('careers.index');
+Route::get('/', [CareerController::class, 'index'])->name('careers.index');
+Route::get('/careers/jobs', [CareerController::class, 'jobs'])->name('careers.jobs.index');
 Route::get('/careers/jobs/{jobPosition:slug}', [CareerController::class, 'show'])->name('careers.jobs.show');
 Route::post('/careers/jobs/{jobPosition:slug}/apply', [CareerController::class, 'apply'])->name('careers.jobs.apply');
 Route::post('/careers/general-application', [CareerController::class, 'generalApply'])->name('careers.general.apply');
 Route::get('/careers/captcha/image', [CaptchaController::class, 'image'])->name('careers.captcha.image');
+Route::get('/media/brand/logos/{filename}', [PublicStorageController::class, 'brandLogo'])->where('filename', '[A-Za-z0-9\.\-]+')->name('brand-logo.show');
+Route::get('/media/brand/logos-dark/{filename}', [PublicStorageController::class, 'brandLogoDark'])->where('filename', '[A-Za-z0-9\.\-]+')->name('brand-logo-dark.show');
+Route::get('/media/careers/gallery/{filename}', [PublicStorageController::class, 'galleryImage'])->where('filename', '[A-Za-z0-9\.\-]+')->name('careers-gallery.show');
+Route::get('/assets/brand/uploads/{filename}', [PublicStorageController::class, 'legacyBrandLogo'])->where('filename', '[A-Za-z0-9\.\-]+')->name('brand-logo.legacy');
+Route::get('/assets/careers/gallery/{filename}', [PublicStorageController::class, 'legacyGalleryAsset'])->where('filename', 'gallery-[A-Za-z0-9\.\-]+')->name('careers-gallery.legacy');
 
-Route::middleware(['auth', 'verified'])->prefix('hrm')->name('hrm.')->group(function () {
+Route::get('/hrm/{path}', function (string $path) {
+    return redirect('/'.$path, 301);
+})->where('path', '.*');
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::name('hrm.')->group(function () {
     Route::resource('departments', DepartmentController::class);
     Route::resource('job-positions', JobPositionController::class);
     Route::resource('application-sources', ApplicationSourceController::class);
     Route::resource('applications', ApplicationController::class);
+    Route::get('applications/{application}/files/{file}/view', [ApplicationController::class, 'viewFile'])->name('applications.files.view');
     Route::get('applications/{application}/files/{file}/download', [ApplicationController::class, 'downloadFile'])->name('applications.files.download');
 
     Route::post('applications/{application}/change-status', [ApplicationStatusController::class, 'change'])->name('applications.change-status');
@@ -70,6 +80,7 @@ Route::middleware(['auth', 'verified'])->prefix('hrm')->name('hrm.')->group(func
     Route::get('settings', [HrmSettingController::class, 'edit'])->name('settings.edit');
     Route::post('settings', [HrmSettingController::class, 'update'])->name('settings.update');
     Route::post('settings/gallery-upload', [HrmSettingController::class, 'uploadGalleryImage'])->name('settings.gallery-upload');
+    });
 });
 
 Route::middleware('auth')->group(function () {

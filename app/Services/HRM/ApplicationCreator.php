@@ -22,6 +22,7 @@ class ApplicationCreator
         private readonly CandidateResolver $candidateResolver,
         private readonly SalaryFitCalculator $salaryFitCalculator,
         private readonly SkillsFitCalculator $skillsFitCalculator,
+        private readonly TrackingCodeGenerator $trackingCodeGenerator,
     ) {
     }
 
@@ -35,6 +36,7 @@ class ApplicationCreator
                 ?? RecruitmentStatus::query()->orderBy('sort_order')->value('id');
 
             $application = Application::create([
+                'tracking_code' => $this->trackingCodeGenerator->generate(),
                 'candidate_id' => $candidate->id,
                 'job_position_id' => $payload['job_position_id'] ?? null,
                 'department_id' => $payload['department_id'] ?? null,

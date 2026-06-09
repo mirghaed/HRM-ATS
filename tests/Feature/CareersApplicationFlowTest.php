@@ -56,6 +56,8 @@ class CareersApplicationFlowTest extends TestCase
         $application = Application::query()->with('candidate')->first();
         $this->assertNotNull($application);
         $this->assertSame('Flow Candidate', $application->candidate?->full_name);
+        $this->assertMatchesRegularExpression('/^\d{3}$/', (string) $application->tracking_code);
+        $response->assertJsonPath('tracking_code', $application->tracking_code);
 
         $this->assertDatabaseHas('candidate_files', [
             'application_id' => $application->id,
@@ -69,7 +71,7 @@ class CareersApplicationFlowTest extends TestCase
 
         $admin = User::query()->where('email', 'admin@yadahrm.local')->firstOrFail();
         $this->actingAs($admin)
-            ->get('/hrm/applications')
+            ->get('/applications')
             ->assertOk()
             ->assertSee('Flow Candidate');
     }
@@ -116,11 +118,14 @@ class CareersApplicationFlowTest extends TestCase
             ->where('job_position_id', $job->id)
             ->firstOrFail();
 
+        $this->assertMatchesRegularExpression('/^\d{3}$/', (string) $application->tracking_code);
+        $applyResponse->assertJsonPath('tracking_code', $application->tracking_code);
+
         $screening = RecruitmentStatus::query()->where('key', 'screening')->firstOrFail();
         $admin = User::query()->where('email', 'admin@yadahrm.local')->firstOrFail();
 
         $this->actingAs($admin)
-            ->post("/hrm/applications/{$application->id}/change-status", [
+            ->post("/applications/{$application->id}/change-status", [
                 'status_id' => $screening->id,
                 'note' => 'Initial screening started',
             ])
@@ -132,5 +137,59 @@ class CareersApplicationFlowTest extends TestCase
         $this->assertSame(2, ApplicationStatusHistory::query()
             ->where('application_id', $application->id)
             ->count());
+    }
+
+    public function test_jobs_index_lists_all_published_positions(): void
+    {
+        $department = Department::query()->create([
+            'name' => 'Engineering',
+            'slug' => 'engineering',
+            'is_active' => true,
+            'is_public' => true,
+        ]);
+
+        JobPosition::query()->create([
+            'department_id' => $department->id,
+            'title' => 'Backend Developer',
+            'slug' => 'backend-dev',
+            'employment_type' => 'full_time',
+            'work_mode' => 'onsite',
+            'status' => 'published',
+            'is_public' => true,
+        ]);
+
+        $this->get('/careers/jobs')
+            ->assertOk()
+            ->assertSee('همه فرصت‌های شغلی باز')
+            ->assertSee('Backend Developer');
+    }
+
+    public function test_landing_page_shows_view_all_link_when_more_than_nine_jobs(): void
+    {
+        $department = Department::query()->create([
+            'name' => 'Engineering',
+            'slug' => 'engineering',
+            'is_active' => true,
+            'is_public' => true,
+        ]);
+
+        for ($i = 1; $i <= 10; $i++) {
+            JobPosition::query()->create([
+                'department_id' => $department->id,
+                'title' => "Job Position {$i}",
+                'slug' => "job-position-{$i}",
+                'employment_type' => 'full_time',
+                'work_mode' => 'onsite',
+                'status' => 'published',
+                'is_public' => true,
+            ]);
+        }
+
+        $response = $this->get('/');
+
+        $response->assertOk()
+            ->assertSee('مشاهده همه 10 فرصت شغلی');
+
+        $this->assertSame(9, substr_count($response->getContent(), 'class="ys-job-card"'));
     }
 }

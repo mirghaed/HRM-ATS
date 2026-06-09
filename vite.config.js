@@ -8,4 +8,8 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        cors: true,
+        origin: process.env.VITE_DEV_SERVER_ORIGIN ?? undefined,
+    },
 });

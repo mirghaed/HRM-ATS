@@ -15,6 +15,7 @@ class Application extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tracking_code',
         'candidate_id',
         'job_position_id',
         'department_id',

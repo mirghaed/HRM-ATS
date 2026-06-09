@@ -9,6 +9,7 @@
 
         <!-- Scripts -->
         @include('layouts.partials.vite')
+        @include('layouts.partials.fonts')
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

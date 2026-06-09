@@ -27,6 +27,7 @@
     </script>
 
     @include('layouts.partials.vite')
+    @include('layouts.partials.fonts')
 </head>
 <body class="h-full bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
     <div class="min-h-full">

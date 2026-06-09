@@ -7,6 +7,7 @@ use App\Http\Requests\HRM\HrmSettingUpdateRequest;
 use App\Services\HRM\HrmSettingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class HrmSettingController extends Controller
@@ -49,6 +50,54 @@ class HrmSettingController extends Controller
     {
         abort_unless(auth()->user()?->can('settings.manage'), 403);
 
+        if ($request->hasFile('logo_dark')) {
+            $validated = $request->validate([
+                'logo_dark' => [
+                    'required',
+                    'file',
+                    'mimes:svg,png,jpg,jpeg,webp',
+                    'mimetypes:image/svg+xml,image/png,image/jpeg,image/webp',
+                    'max:2048',
+                ],
+            ]);
+
+            $logo = $validated['logo_dark'];
+            $filename = 'logo-dark-'.now()->format('Ymd-His').'-'.Str::lower(Str::random(8)).'.'.$logo->getClientOriginalExtension();
+            Storage::disk('public')->putFileAs('brand/logos-dark', $logo, $filename);
+
+            $path = '/media/brand/logos-dark/'.$filename;
+
+            return response()->json([
+                'status' => 'ok',
+                'path' => $path,
+                'url' => url(ltrim($path, '/')),
+            ]);
+        }
+
+        if ($request->hasFile('logo')) {
+            $validated = $request->validate([
+                'logo' => [
+                    'required',
+                    'file',
+                    'mimes:svg,png,jpg,jpeg,webp',
+                    'mimetypes:image/svg+xml,image/png,image/jpeg,image/webp',
+                    'max:2048',
+                ],
+            ]);
+
+            $logo = $validated['logo'];
+            $filename = 'logo-'.now()->format('Ymd-His').'-'.Str::lower(Str::random(8)).'.'.$logo->getClientOriginalExtension();
+            Storage::disk('public')->putFileAs('brand/logos', $logo, $filename);
+
+            $path = '/media/brand/logos/'.$filename;
+
+            return response()->json([
+                'status' => 'ok',
+                'path' => $path,
+                'url' => url(ltrim($path, '/')),
+            ]);
+        }
+
         $validated = $request->validate([
             'image' => [
                 'required',
@@ -60,21 +109,16 @@ class HrmSettingController extends Controller
         ]);
 
         $image = $validated['image'];
-        $directory = public_path('assets/careers/gallery');
-
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
         $filename = 'gallery-'.now()->format('Ymd-His').'-'.Str::lower(Str::random(8)).'.'.$image->getClientOriginalExtension();
-        $image->move($directory, $filename);
 
-        $path = '/assets/careers/gallery/'.$filename;
+        Storage::disk('public')->putFileAs('careers/gallery', $image, $filename);
+
+        $path = '/media/careers/gallery/'.$filename;
 
         return response()->json([
             'status' => 'ok',
             'path' => $path,
-            'url' => asset(ltrim($path, '/')),
+            'url' => url(ltrim($path, '/')),
         ]);
     }
 
@@ -109,14 +153,24 @@ class HrmSettingController extends Controller
             ['key' => 'sms.queue_name', 'label' => 'نام صف پیامک', 'group' => 'sms', 'type' => 'string', 'input' => 'text', 'default' => 'default', 'help' => 'نام صفی که Job پیامک در آن اجرا می‌شود.'],
 
             // Landing
-            ['key' => 'landing.hero_title', 'label' => 'تیتر اصلی لندینگ', 'group' => 'landing', 'type' => 'string', 'input' => 'textarea', 'default' => 'به تیم‌هایی بپیوند که رشد را واقعی می‌سازند', 'help' => 'تیتر اصلی بالای صفحه careers.'],
-            ['key' => 'landing.hero_subtitle', 'label' => 'متن زیر تیتر لندینگ', 'group' => 'landing', 'type' => 'string', 'input' => 'textarea', 'default' => 'در یادا روی پروژه‌های واقعی کار می‌کنیم، مسئولیت می‌گیریم و با داده تصمیم می‌گیریم.', 'help' => 'متن توضیحی Hero.'],
-            ['key' => 'landing.logo_url', 'label' => 'آدرس لوگوی لندینگ', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => '/assets/brand/yadak-shop-logo.svg', 'help' => 'مسیر لوگوی برند در هدر و هیرو.'],
+            ['key' => 'landing.hero_badge', 'label' => 'برچسب Hero', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'جای تو در تیم {company} خالیه', 'help' => 'متن کوچک بالای تیتر Hero. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.hero_title', 'label' => 'تیتر اصلی لندینگ', 'group' => 'landing', 'type' => 'string', 'input' => 'textarea', 'default' => 'به تیم‌هایی بپیوند که رشد را واقعی می‌سازند', 'help' => 'تیتر اصلی بالای صفحه careers. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.hero_subtitle', 'label' => 'متن زیر تیتر لندینگ', 'group' => 'landing', 'type' => 'string', 'input' => 'textarea', 'default' => 'در {company} روی پروژه‌های واقعی کار می‌کنیم، مسئولیت می‌گیریم و با داده تصمیم می‌گیریم.', 'help' => 'متن توضیحی Hero. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.header_brand_text', 'label' => 'متن برند در هدر', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'فرصت‌های همکاری {company}', 'help' => 'متن کنار لوگو در هدر لندینگ. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.departments_kicker', 'label' => 'زیرعنوان بخش تیم‌ها', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'تیم‌ها و دپارتمان‌ها', 'help' => 'متن کوچک بالای عنوان بخش دپارتمان‌ها.'],
+            ['key' => 'landing.departments_title', 'label' => 'عنوان بخش تیم‌ها', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'تیم‌هایی که در {company} کنار هم کار می‌کنند', 'help' => 'عنوان اصلی بخش دپارتمان‌ها. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.why_kicker', 'label' => 'زیرعنوان بخش مزایا', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'چرا همکاری با ما', 'help' => 'متن کوچک بالای عنوان بخش مزایا.'],
+            ['key' => 'landing.why_title', 'label' => 'عنوان بخش مزایا', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'چرا {company}؟', 'help' => 'عنوان اصلی بخش مزایا. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.culture_kicker', 'label' => 'زیرعنوان بخش فرهنگ', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'ترکیب نظم عملیاتی و سرعت اجرای تکنولوژی', 'help' => 'متن کوچک بالای عنوان بخش فرهنگ سازمانی.'],
+            ['key' => 'landing.culture_title', 'label' => 'عنوان بخش فرهنگ', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'فرهنگ همکاری در {company}', 'help' => 'عنوان اصلی بخش فرهنگ. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.culture_content', 'label' => 'متن بخش فرهنگ', 'group' => 'landing', 'type' => 'string', 'input' => 'textarea', 'default' => 'در {company} شفافیت، مسئولیت‌پذیری و کار تیمی پایه‌های اصلی همکاری هستند. هر نقش مالک خروجی خود است و با هماهنگی بین تیم‌ها، نتیجه‌ای بهتر برای مشتری ساخته می‌شود.', 'help' => 'متن توضیحی بخش فرهنگ. از {company} برای نام برند استفاده کنید.'],
+            ['key' => 'landing.logo_url', 'label' => 'لوگوی لندینگ (حالت روشن)', 'group' => 'landing', 'type' => 'string', 'input' => 'logo', 'default' => '/assets/brand/yadak-shop-logo.svg', 'help' => 'لوگوی برند در هدر و فوتر لندینگ برای حالت روشن. می‌توانید فایل را آپلود کنید یا مسیر/آدرس مستقیم وارد کنید.'],
+            ['key' => 'landing.logo_url_dark', 'label' => 'لوگوی لندینگ (حالت تیره)', 'group' => 'landing', 'type' => 'string', 'input' => 'logo_dark', 'default' => '', 'help' => 'لوگوی مخصوص دارک‌مود. اگر خالی باشد، لوگوی حالت روشن نمایش داده می‌شود.'],
             ['key' => 'landing.og_image', 'label' => 'تصویر OG لندینگ', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => '', 'help' => 'تصویر اشتراک‌گذاری شبکه‌های اجتماعی.'],
             ['key' => 'landing.show_salary', 'label' => 'نمایش حقوق در لندینگ', 'group' => 'landing', 'type' => 'boolean', 'input' => 'boolean', 'default' => false, 'help' => 'نمایش بازه حقوق در کارت موقعیت‌ها.'],
             ['key' => 'landing.show_faq', 'label' => 'نمایش بخش FAQ', 'group' => 'landing', 'type' => 'boolean', 'input' => 'boolean', 'default' => true, 'help' => 'نمایش/عدم نمایش سوالات متداول.'],
             ['key' => 'landing.gallery_enabled', 'label' => 'فعال بودن گالری', 'group' => 'landing', 'type' => 'boolean', 'input' => 'boolean', 'default' => true, 'help' => 'نمایش یا عدم نمایش اسلایدر گالری.'],
-            ['key' => 'landing.gallery_title', 'label' => 'عنوان گالری', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'تصویر زندگی کاری در یادا', 'help' => 'عنوان نمایشی گالری.'],
+            ['key' => 'landing.gallery_title', 'label' => 'عنوان گالری', 'group' => 'landing', 'type' => 'string', 'input' => 'text', 'default' => 'تصویر زندگی کاری در {company}', 'help' => 'عنوان نمایشی گالری. از {company} برای نام برند استفاده کنید.'],
             ['key' => 'landing.gallery_slides', 'label' => 'اسلایدهای گالری', 'group' => 'landing', 'type' => 'json', 'input' => 'gallery', 'default' => [], 'help' => 'مدیریت تصاویر اسلایدر و متن جایگزین.'],
 
             // Process

@@ -2,8 +2,8 @@
     <div class="ys-container">
         <div class="ys-section-head">
             <div>
-                <span class="ys-kicker">{{ data_get($processSection, 'subtitle', 'فرايند شفاف') }}</span>
-                <h2>{{ data_get($processSection, 'title', 'فرايند جذب') }}</h2>
+                <span class="ys-kicker">{{ data_get($processSection, 'subtitle', 'فرایند شفاف') }}</span>
+                <h2>{{ data_get($processSection, 'title', 'فرایند جذب') }}</h2>
             </div>
         </div>
 
@@ -20,10 +20,10 @@
                 @endforeach
             </ol>
 
-            <aside class="ys-process-note" aria-label="اطلاعات تکميلي جذب">
-                <h3>زمان پاسخ‌گويي</h3>
-                <p>زمان پاسخ اوليه معمولا بين 3 تا 5 روز کاري است.</p>
-                <p>نتيجه مراحل از طريق تماس يا پيامک اطلاع‌رساني مي‌شود.</p>
+            <aside class="ys-process-note" aria-label="اطلاعات تکمیلی جذب">
+                <h3>زمان پاسخ‌گویی</h3>
+                <p>زمان پاسخ اولیه معمولاً بین ۳ تا ۵ روز کاری است.</p>
+                <p>نتیجه مراحل از طریق تماس یا پیامک اطلاع‌رسانی می‌شود.</p>
             </aside>
         </div>
     </div>

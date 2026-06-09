@@ -8,6 +8,7 @@
         <title>{{ config('app.name', 'YadaHRM') }}</title>
 
         @include('layouts.partials.vite')
+        @include('layouts.partials.fonts')
     </head>
     <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
         <div class="relative min-h-screen overflow-hidden">

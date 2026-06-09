@@ -53,9 +53,10 @@ class NumericCaptchaService
 
     private function detectFont(): ?string
     {
+       
         $candidates = [
-            'C:/Windows/Fonts/arial.ttf',
-            'C:/Windows/Fonts/tahoma.ttf',
+            public_path('assets/fonts/peyda/ttf/arial.TTF'),
+            public_path('assets/fonts/peyda/ttf/tahoma.TTF'),
         ];
 
         foreach ($candidates as $path) {

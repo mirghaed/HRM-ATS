@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? ($hrmSettings['panel.title'] ?? 'پنل HRM') }}</title>
     @include('layouts.partials.vite')
+    @include('layouts.partials.fonts')
     @stack('head')
 </head>
 <body class="hrm-panel text-slate-800">
@@ -31,7 +32,7 @@
             <div class="ys-admin-nav-wrap">
                 <nav class="ys-admin-nav">
                     @can('dashboard.view')
-                        <a class="ys-admin-nav__link {{ request()->routeIs('hrm.dashboard') ? 'is-active' : '' }}" href="{{ route('hrm.dashboard') }}">داشبورد</a>
+                        <a class="ys-admin-nav__link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}" href="{{ route('dashboard') }}">داشبورد</a>
                     @endcan
                     @can('departments.view')
                         <a class="ys-admin-nav__link {{ request()->routeIs('hrm.departments.*') ? 'is-active' : '' }}" href="{{ route('hrm.departments.index') }}">دپارتمان‌ها</a>

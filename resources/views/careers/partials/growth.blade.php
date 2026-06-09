@@ -2,8 +2,8 @@
     <div class="ys-container">
         <div class="ys-section-head">
             <div>
-                <span class="ys-kicker">مسير رشد</span>
-                <h2>{{ data_get($growthSection, 'title', 'مسير رشد حرفه‌اي شما') }}</h2>
+                <span class="ys-kicker">مسیر رشد</span>
+                <h2>{{ data_get($growthSection, 'title', 'مسیر رشد حرفه‌ای شما') }}</h2>
             </div>
         </div>
 
