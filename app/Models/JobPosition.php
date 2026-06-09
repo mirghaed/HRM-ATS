@@ -97,12 +97,12 @@ class JobPosition extends Model
 
     public function visitsCounter()
     {
-        return visits($this, 'public_page');
+        return \visits($this, 'public_page');
     }
 
     public function visitsRelation()
     {
-        return visits($this)->relation();
+        return \visits($this)->relation();
     }
 
     public function plainTextSummary(?int $limit = null): string

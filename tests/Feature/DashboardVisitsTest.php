@@ -31,7 +31,7 @@ class DashboardVisitsTest extends TestCase
 
         $this->get(route('careers.jobs.show', $job))->assertOk();
 
-        $this->assertSame(1, visits($job, JobPositionVisitRecorder::TAG)->count());
+        $this->assertSame(1, \visits($job, JobPositionVisitRecorder::TAG)->count());
     }
 
     public function test_refresh_does_not_increment_visit_within_same_ip_window(): void
@@ -41,7 +41,7 @@ class DashboardVisitsTest extends TestCase
         $this->get(route('careers.jobs.show', $job))->assertOk();
         $this->get(route('careers.jobs.show', $job))->assertOk();
 
-        $this->assertSame(1, visits($job, JobPositionVisitRecorder::TAG)->count());
+        $this->assertSame(1, \visits($job, JobPositionVisitRecorder::TAG)->count());
     }
 
     public function test_authenticated_admin_visit_is_not_recorded(): void
@@ -53,13 +53,13 @@ class DashboardVisitsTest extends TestCase
             ->get(route('careers.jobs.show', $job))
             ->assertOk();
 
-        $this->assertSame(0, visits($job, JobPositionVisitRecorder::TAG)->count());
+        $this->assertSame(0, \visits($job, JobPositionVisitRecorder::TAG)->count());
     }
 
     public function test_dashboard_shows_visit_analytics_table(): void
     {
         $job = $this->createPublishedJob('Dashboard Analytics Job');
-        visits($job, JobPositionVisitRecorder::TAG)->increment(5);
+        \visits($job, JobPositionVisitRecorder::TAG)->increment(5);
 
         $admin = User::query()->where('email', 'admin@yadahrm.local')->firstOrFail();
 
@@ -81,7 +81,7 @@ class DashboardVisitsTest extends TestCase
     public function test_job_positions_index_shows_visit_columns(): void
     {
         $job = $this->createPublishedJob('Index Visit Job');
-        visits($job, JobPositionVisitRecorder::TAG)->increment(2);
+        \visits($job, JobPositionVisitRecorder::TAG)->increment(2);
 
         $admin = User::query()->where('email', 'admin@yadahrm.local')->firstOrFail();
 

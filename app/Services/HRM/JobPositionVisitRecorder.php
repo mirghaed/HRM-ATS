@@ -15,7 +15,7 @@ class JobPositionVisitRecorder
             return;
         }
 
-        visits($jobPosition, self::TAG)
+        \visits($jobPosition, self::TAG)
             ->seconds(86400)
             ->increment();
     }
@@ -44,7 +44,7 @@ class JobPositionVisitRecorder
 
     public function stats(JobPosition $jobPosition): array
     {
-        $counter = visits($jobPosition, self::TAG);
+        $counter = \visits($jobPosition, self::TAG);
         $viewsTotal = (int) $counter->count();
 
         return [
